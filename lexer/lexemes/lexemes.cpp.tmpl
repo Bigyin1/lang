@@ -1,0 +1,38 @@
+// Code generated DO NOT EDIT
+#include "lexer/lexemes.hpp"
+
+#include <string.h>
+#include <stdlib.h>
+
+
+TokenName ReservedWordToToken(const char* w) {
+
+    {{ range .ConstLexemes }} 
+    if (strcmp(w, "{{.Lexeme}}") == 0)
+        return {{.TokenName}};
+    {{ end }}
+    return TokEOF;
+}
+
+const char* TokenNameToString(TokenName n) {
+    {{ range .ConstLexemes }}
+    if ({{.TokenName}} == n) {
+        return "{{.TokenName}}";
+    }
+    {{ end }}
+
+    {{ range .VarLexemes }}
+    if ({{.TokenName}} == n) {
+        return "{{.TokenName}}";
+    }
+    {{ end }}
+
+    if (TokEOF == n) {
+            return "EOF";
+    }
+
+    exit(1);
+}
+
+
+

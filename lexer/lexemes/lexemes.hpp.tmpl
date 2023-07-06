@@ -1,0 +1,20 @@
+// Code generated DO NOT EDIT
+
+/** @file */
+#ifndef LEXEMES_GEN_PUBLIC_HPP
+#define LEXEMES_GEN_PUBLIC_HPP
+
+
+enum TokenName {
+	TokEOF = 0,
+
+	{{ range .TokNames }}{{ . }},
+    {{ end }}
+};
+
+TokenName ReservedWordToToken(const char* w);
+
+const char* TokenNameToString(TokenName n);
+
+
+#endif
