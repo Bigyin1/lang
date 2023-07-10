@@ -8,7 +8,7 @@
 enum TokenName {
 	TokEOF = 0,
 
-	{{ range .TokNames }}{{ . }},
+	{{ range $i, $name := .TokNames }}{{ $name }} = 1ULL << {{ $i }},
     {{ end }}
 };
 

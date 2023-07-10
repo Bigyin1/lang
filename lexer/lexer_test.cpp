@@ -7,16 +7,16 @@
 
 const char* testData = "int a\n"
                        "float b = 3.14\n"
-                       "while a>= b";
+                       "for a>= b";
 
 Token expToks[] = {
 
     {.n = IntType, .Row = 1, .Col = 1},   {.n = ID, .StrVal = "a", .Row = 1, .Col = 5},
     {.n = FloatType, .Row = 2, .Col = 1}, {.n = ID, .StrVal = "b", .Row = 2, .Col = 7},
-    {.n = Assign, .Row = 2, .Col = 9},    {.n = Float, .FloatVal = 3.14, .Row = 2, .Col = 11},
-    {.n = While, .Row = 3, .Col = 1},     {.n = ID, .StrVal = "a", .Row = 3, .Col = 7},
+    {.n = ASSIGN, .Row = 2, .Col = 9},    {.n = Float, .FloatVal = 3.14, .Row = 2, .Col = 11},
+    {.n = FOR, .Row = 3, .Col = 1},       {.n = ID, .StrVal = "a", .Row = 3, .Col = 7},
     {.n = GE, .Row = 3, .Col = 8},        {.n = ID, .StrVal = "b", .Row = 3, .Col = 11},
-
+    {.n = TokEOF, .Row = 3, .Col = 12},
 };
 
 int main()

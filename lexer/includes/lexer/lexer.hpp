@@ -26,8 +26,6 @@ struct Token
     unsigned Col;
 };
 
-typedef struct Token Token;
-
 struct Lexer
 {
     char* input;
@@ -47,8 +45,6 @@ struct Lexer
     unsigned currRow;
     unsigned currColumn;
 };
-
-typedef struct Lexer Lexer;
 
 Lexer NewLexer(char* input);
 

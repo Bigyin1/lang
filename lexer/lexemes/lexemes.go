@@ -12,10 +12,6 @@ var ConstantLexemes = []LexemeMeta{
 		TokenName: "FOR",
 	},
 	{
-		Lexeme:    "while",
-		TokenName: "WHILE",
-	},
-	{
 		Lexeme:    "if",
 		TokenName: "IF",
 	},
@@ -24,12 +20,28 @@ var ConstantLexemes = []LexemeMeta{
 		TokenName: "ELSE",
 	},
 	{
+		Lexeme:    "var",
+		TokenName: "VAR",
+	},
+	{
 		Lexeme:    "int",
 		TokenName: "IntType",
 	},
 	{
 		Lexeme:    "float",
 		TokenName: "FloatType",
+	},
+	{
+		Lexeme:    "bool",
+		TokenName: "BoolType",
+	},
+	{
+		Lexeme:    "true",
+		TokenName: "TRUE",
+	},
+	{
+		Lexeme:    "false",
+		TokenName: "FALSE",
 	},
 	{
 		Lexeme:    "+",
@@ -101,7 +113,15 @@ var ConstantLexemes = []LexemeMeta{
 	},
 	{
 		Lexeme:    "return",
-		TokenName: "RET",
+		TokenName: "RETURN",
+	},
+	{
+		Lexeme:    "break",
+		TokenName: "BREAK",
+	},
+	{
+		Lexeme:    "continue",
+		TokenName: "CONTINUE",
 	},
 	{
 		Lexeme:    "func",

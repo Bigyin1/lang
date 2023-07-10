@@ -38,5 +38,7 @@ void Run(Lexer* l)
 {
 
     lexProgramm(l);
+
+    emit(l, TokEOF);
     return;
 }

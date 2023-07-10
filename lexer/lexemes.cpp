@@ -9,16 +9,16 @@ TokenName ReservedWordToToken(const char* w) {
 
      
     if (strcmp(w, "for") == 0)
-        return For;
-     
-    if (strcmp(w, "while") == 0)
-        return While;
+        return FOR;
      
     if (strcmp(w, "if") == 0)
-        return If;
+        return IF;
      
     if (strcmp(w, "else") == 0)
-        return Else;
+        return ELSE;
+     
+    if (strcmp(w, "var") == 0)
+        return VAR;
      
     if (strcmp(w, "int") == 0)
         return IntType;
@@ -26,38 +26,47 @@ TokenName ReservedWordToToken(const char* w) {
     if (strcmp(w, "float") == 0)
         return FloatType;
      
+    if (strcmp(w, "bool") == 0)
+        return BoolType;
+     
+    if (strcmp(w, "true") == 0)
+        return TRUE;
+     
+    if (strcmp(w, "false") == 0)
+        return FALSE;
+     
     if (strcmp(w, "+") == 0)
-        return Plus;
+        return PLUS;
      
     if (strcmp(w, "-") == 0)
-        return Minus;
+        return MINUS;
      
     if (strcmp(w, "*") == 0)
-        return Mult;
+        return MULT;
      
     if (strcmp(w, "/") == 0)
-        return Div;
+        return DIV;
      
     if (strcmp(w, "(") == 0)
-        return LParen;
+        return LPAREN;
      
     if (strcmp(w, ")") == 0)
-        return RParen;
+        return RPAREN;
      
     if (strcmp(w, "[") == 0)
-        return LSParen;
+        return LBRACKET;
      
     if (strcmp(w, "]") == 0)
-        return RSParen;
+        return RBRACKET;
      
     if (strcmp(w, "{") == 0)
-        return LCParen;
+        return LBRACE;
      
     if (strcmp(w, "}") == 0)
-        return RCParen;
+        return RBRACE;
      
     if (strcmp(w, "=") == 0)
-        return Assign;
+        return ASSIGN;
      
     if (strcmp(w, "==") == 0)
         return EQ;
@@ -76,26 +85,41 @@ TokenName ReservedWordToToken(const char* w) {
      
     if (strcmp(w, "!=") == 0)
         return NE;
+     
+    if (strcmp(w, "return") == 0)
+        return RETURN;
+     
+    if (strcmp(w, "break") == 0)
+        return BREAK;
+     
+    if (strcmp(w, "continue") == 0)
+        return CONTINUE;
+     
+    if (strcmp(w, "func") == 0)
+        return FUNC;
+     
+    if (strcmp(w, ",") == 0)
+        return COMMA;
     
     return TokEOF;
 }
 
 const char* TokenNameToString(TokenName n) {
     
-    if (For == n) {
-        return "For";
+    if (FOR == n) {
+        return "FOR";
     }
     
-    if (While == n) {
-        return "While";
+    if (IF == n) {
+        return "IF";
     }
     
-    if (If == n) {
-        return "If";
+    if (ELSE == n) {
+        return "ELSE";
     }
     
-    if (Else == n) {
-        return "Else";
+    if (VAR == n) {
+        return "VAR";
     }
     
     if (IntType == n) {
@@ -106,48 +130,60 @@ const char* TokenNameToString(TokenName n) {
         return "FloatType";
     }
     
-    if (Plus == n) {
-        return "Plus";
+    if (BoolType == n) {
+        return "BoolType";
     }
     
-    if (Minus == n) {
-        return "Minus";
+    if (TRUE == n) {
+        return "TRUE";
     }
     
-    if (Mult == n) {
-        return "Mult";
+    if (FALSE == n) {
+        return "FALSE";
     }
     
-    if (Div == n) {
-        return "Div";
+    if (PLUS == n) {
+        return "PLUS";
     }
     
-    if (LParen == n) {
-        return "LParen";
+    if (MINUS == n) {
+        return "MINUS";
     }
     
-    if (RParen == n) {
-        return "RParen";
+    if (MULT == n) {
+        return "MULT";
     }
     
-    if (LSParen == n) {
-        return "LSParen";
+    if (DIV == n) {
+        return "DIV";
     }
     
-    if (RSParen == n) {
-        return "RSParen";
+    if (LPAREN == n) {
+        return "LPAREN";
     }
     
-    if (LCParen == n) {
-        return "LCParen";
+    if (RPAREN == n) {
+        return "RPAREN";
     }
     
-    if (RCParen == n) {
-        return "RCParen";
+    if (LBRACKET == n) {
+        return "LBRACKET";
     }
     
-    if (Assign == n) {
-        return "Assign";
+    if (RBRACKET == n) {
+        return "RBRACKET";
+    }
+    
+    if (LBRACE == n) {
+        return "LBRACE";
+    }
+    
+    if (RBRACE == n) {
+        return "RBRACE";
+    }
+    
+    if (ASSIGN == n) {
+        return "ASSIGN";
     }
     
     if (EQ == n) {
@@ -172,6 +208,26 @@ const char* TokenNameToString(TokenName n) {
     
     if (NE == n) {
         return "NE";
+    }
+    
+    if (RETURN == n) {
+        return "RETURN";
+    }
+    
+    if (BREAK == n) {
+        return "BREAK";
+    }
+    
+    if (CONTINUE == n) {
+        return "CONTINUE";
+    }
+    
+    if (FUNC == n) {
+        return "FUNC";
+    }
+    
+    if (COMMA == n) {
+        return "COMMA";
     }
     
 

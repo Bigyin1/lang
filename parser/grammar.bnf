@@ -1,0 +1,71 @@
+
+programm: function_decl (function_decl)*
+
+function_decl: FUNC ID LPAREN RPAREN params_list RPAREN (type_spec)? compound_stmt
+
+params_list: params (COMMA params)*
+
+params: ID (COMMA ID)* type_spec
+        | empty
+
+compound_stmt: LBRACE (stmt | VAR var_decl_list | VAR var_decl)* RBRACE
+
+var_decl_list : LPAREN ID type_spec (ASSIGN expr)? RPAREN
+
+var_decl : ID type_spec (ASSIGN expr)?
+
+type_spec : INTEGER | FLOAT | BOOL
+
+stmt :  compound_stmt
+      | assign_stmt
+      | funccall_stmt
+      | selection_stmt
+      | iteration_stmt
+      | jump_stmt
+
+assign_stmt : variable ASSIGN expr
+
+funccall_stmt : funccall
+
+selection_stmt : if_stmt
+
+if_stmt : IF expr compound_stmt (ELSE (if_stmt | compound_stmt))?
+
+iteration_stmt : FOR expr compound_stmt
+
+jump_stmt :  BREAK
+           | CONTINUE
+           | RETURN (expr)? 
+
+expr : arithm (relop arithm)?
+
+arithm : term ((PLUS | MINUS) term)*
+
+term : factor ((MULT | DIV) factor)*
+
+factor :  MINUS factor
+        | INTEGER
+        | FLOAT
+        | TRUE
+        | FALSE
+        | variable
+        | LPAREN expr RPAREN
+        | funccall
+
+relop : EQ
+        | NEQ
+        | GT
+        | GE
+        | LT
+        | LE
+        | NE
+
+
+funccall : ID LPAREN func_args RPAREN
+
+func_args :   expr (COMMA expr)*
+            | empty
+
+variable: ID
+
+empty :

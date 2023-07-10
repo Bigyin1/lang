@@ -25,7 +25,10 @@ func collectTokNames(ctx *lexGenCtx) {
 }
 
 func main() {
+	// a := 2
+	// if a || 2 {
 
+	// }
 	tmplDir := flag.String("tmplDir", "", "")
 	headerName := flag.String("hdrName", "", "")
 	srcName := flag.String("srcName", "", "")
