@@ -4,7 +4,7 @@
 
 #include <stdio.h>
 
-#include "parser/parser.hpp"
+#include "lexer/lexer.hpp"
 
 typedef uint64_t TokenNamesSet;
 

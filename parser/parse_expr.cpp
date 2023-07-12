@@ -1,20 +1,22 @@
+#include "parse_expr.hpp"
+
 #include <stdlib.h>
 
 #include "nodes.hpp"
 #include "parser.hpp"
-#include "parser_expr.hpp"
 
 static ListNode* funcArgs(Parser* p)
 {
 
-    Node ln = NewListNode(2, NODE_ARGS_LIST);
+    Node ln = NewListNode(NODE_ARGS_LIST);
 
     Node arg = expr(p);
     ListNodeAddChild(ln.ln, arg);
 
     while (currTokenHasName(p, COMMA))
     {
-        Node arg = expr(p);
+        eatToken(p, COMMA);
+        arg = expr(p);
         ListNodeAddChild(ln.ln, arg);
     }
 
@@ -60,6 +62,9 @@ static Node factor(Parser* p)
 
         return NewValNode(val);
     }
+
+    if (!currTokenHasName(p, LPAREN | Integer | Float | TRUE | FALSE | ID | MINUS))
+        return Node{};
 
     eatToken(p, LPAREN);
 
@@ -110,9 +115,6 @@ static Node arithm(Parser* p)
 
 Node expr(Parser* p)
 {
-    if (p->HasErr)
-        return Node{};
-
     Node l = arithm(p);
 
     if (currTokenHasName(p, EQ | NE | GT | GE | LT | LE | NE))

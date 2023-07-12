@@ -4,7 +4,7 @@
 
 #include "parser/parser.hpp"
 
-Node NewListNode(size_t initCap, NodeType nt);
+Node NewListNode(NodeType nt);
 
 void ListNodeAddChild(ListNode* ln, Node child);
 
@@ -15,6 +15,10 @@ Node NewUnOpNode(Node e, Token* op);
 Node NewValNode(Token* val);
 
 Node NewVarDeclNode(Token* name, Token* type, Node init);
+
+Node NewIfStmtNode(Token* op, Node cond, ListNode* body, Node elseBody);
+
+Node NewForStmtNode(Token* op, Node cond, ListNode* body);
 
 Node NewFuncDeclNode(Token* name, ListNode* params, Token* ret, ListNode* body);
 

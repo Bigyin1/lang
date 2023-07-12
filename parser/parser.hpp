@@ -10,6 +10,6 @@ bool currTokenHasName(Parser* p, TokenNamesSet n);
 
 void eatToken(Parser* p, TokenNamesSet exp);
 
-TokenName peek(Parser* n);
+TokenName peek(Parser* p);
 
 #endif

@@ -4,6 +4,8 @@
 
 #include "parser/parser.hpp"
 
+FuncCallNode* funccall(Parser* p);
+
 Node expr(Parser* p);
 
 #endif

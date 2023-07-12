@@ -4,13 +4,13 @@
 
 #include "nodes.hpp"
 
-Node NewListNode(size_t initCap, NodeType nt)
+Node NewListNode(NodeType nt)
 {
 
     ListNode* ln = (ListNode*)calloc(1, sizeof(ListNode));
-    ln->chCap    = initCap;
+    ln->chCap    = 1;
 
-    ln->children = (Node*)calloc(ln->chCap, sizeof(Node*));
+    ln->children = (Node*)calloc(ln->chCap, sizeof(Node));
 
     return NewNodeWithType(ln, nt);
 }
@@ -20,8 +20,8 @@ void ListNodeAddChild(ListNode* ln, Node child)
 
     if (ln->chLen == ln->chCap)
     {
-        ln->chLen *= 2;
-        ln->children = (Node*)realloc(ln->children, ln->chLen);
+        ln->chCap *= 2;
+        ln->children = (Node*)realloc(ln->children, ln->chCap * sizeof(Node));
     }
 
     ln->children[ln->chLen] = child;
@@ -70,6 +70,31 @@ Node NewVarDeclNode(Token* name, Token* type, Node init)
     return NewNodeWithType(vdn, NODE_VAR_DECL);
 }
 
+Node NewIfStmtNode(Token* op, Node cond, ListNode* body, Node elseBody)
+{
+
+    IfStmtNode* ifstn = (IfStmtNode*)calloc(1, sizeof(IfStmtNode));
+
+    ifstn->ifTok    = op;
+    ifstn->cond     = cond;
+    ifstn->body     = body;
+    ifstn->elseBody = elseBody;
+
+    return NewNodeWithType(ifstn, NODE_IF_STMT);
+}
+
+Node NewForStmtNode(Token* op, Node cond, ListNode* body)
+{
+
+    ForStmtNode* forstn = (ForStmtNode*)calloc(1, sizeof(ForStmtNode));
+
+    forstn->forTok = op;
+    forstn->cond   = cond;
+    forstn->body   = body;
+
+    return NewNodeWithType(forstn, NODE_FOR_STMT);
+}
+
 Node NewFuncDeclNode(Token* name, ListNode* params, Token* ret, ListNode* body)
 {
 
@@ -87,39 +112,7 @@ Node NewNodeWithType(void* n, NodeType t)
     Node node     = {};
     node.hdr.type = t;
 
-    switch (t)
-    {
-        case NODE_COMPOUND_STMT:
-        case NODE_ARGS_LIST:
-        case NODE_PARAMS_LIST:
-        case NODE_PROGRAMM:
-            node.ln = (ListNode*)n;
-            break;
-
-        case NODE_VAL:
-            node.vn = (ValNode*)n;
-            break;
-        case NODE_FUNCTION_DECL:
-            node.fdn = (FuncDeclNode*)n;
-            break;
-        case NODE_FUNCTION_PARAM:
-            node.fpn = (FuncParamNode*)n;
-            break;
-        case NODE_FUNCTION_CALL:
-            node.fcn = (FuncCallNode*)n;
-            break;
-        case NODE_VAR_DECL:
-            node.vdn = (VarDeclNode*)n;
-            break;
-        case NODE_BINOP:
-            node.bopn = (BinOpNode*)n;
-            break;
-        case NODE_UNOP:
-            node.uopn = (UnOpNode*)n;
-            break;
-        default:
-            break;
-    }
+    node.gen = n;
 
     return node;
 }

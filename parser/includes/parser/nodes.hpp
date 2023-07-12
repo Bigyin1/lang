@@ -18,6 +18,9 @@ enum NodeType
     NODE_FUNCTION_CALL,
     NODE_VAR_DECL,
     NODE_VAL,
+    NODE_IF_STMT,
+    NODE_FOR_STMT,
+    // NODE_JUMP_STMT,
     NODE_BINOP,
     NODE_UNOP,
 };
@@ -28,6 +31,8 @@ struct FuncDeclNode;
 struct FuncParamNode;
 struct VarDeclNode;
 struct ValNode;
+struct IfStmtNode;
+struct ForStmtNode;
 struct BinOpNode;
 struct UnOpNode;
 
@@ -41,12 +46,15 @@ struct Node
     NodeHeader hdr;
     union
     {
+        void*          gen;
         ListNode*      ln;
         ValNode*       vn;
         VarDeclNode*   vdn;
         FuncParamNode* fpn;
         FuncDeclNode*  fdn;
         FuncCallNode*  fcn;
+        IfStmtNode*    ifstn;
+        ForStmtNode*   forstn;
         BinOpNode*     bopn;
         UnOpNode*      uopn;
     };
@@ -93,6 +101,24 @@ struct FuncCallNode
     Token* fName;
 
     ListNode* args;
+};
+
+struct IfStmtNode
+{
+    Token* ifTok;
+
+    Node      cond;
+    ListNode* body;
+
+    Node elseBody;
+};
+
+struct ForStmtNode
+{
+    Token* forTok;
+
+    Node      cond;
+    ListNode* body;
 };
 
 struct BinOpNode

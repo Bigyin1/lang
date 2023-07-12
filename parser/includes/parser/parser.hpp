@@ -7,9 +7,9 @@
 
 struct Parser
 {
-    Token*    tokens;
-    size_t    currTokenIdx;
-    ListNode* prog;
+    Token* tokens;
+    size_t currTokenIdx;
+    Node   prog;
 
     UnexpTokenError Err;
     bool            HasErr;
