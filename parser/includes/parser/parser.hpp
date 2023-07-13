@@ -17,6 +17,8 @@ struct Parser
 
 Parser NewParser(Token* tokens);
 
+void FreeNode(Node n);
+
 void Run(Parser* p);
 
 #endif

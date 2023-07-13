@@ -16,6 +16,16 @@ bool currTokenHasName(Parser* p, TokenNamesSet n)
     return false;
 }
 
+void emitError(Parser* p, TokenNamesSet exp)
+{
+    p->Err = UnexpTokenError{
+        .tok = getCurrToken(p),
+        .exp = exp,
+    };
+
+    p->HasErr = true;
+}
+
 void eatToken(Parser* p, TokenNamesSet exp)
 {
     if (p->HasErr)
@@ -26,12 +36,7 @@ void eatToken(Parser* p, TokenNamesSet exp)
         p->currTokenIdx++;
         return;
     }
-    p->Err = UnexpTokenError{
-        .tok = getCurrToken(p),
-        .exp = exp,
-    };
-
-    p->HasErr = true;
+    emitError(p, exp);
 }
 
 TokenName peek(Parser* p)

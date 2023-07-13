@@ -12,6 +12,14 @@ enum TokenName {
     {{ end }}
 };
 
+const TokenName TokenNames[] = {
+
+    {{ range $i, $name := .TokNames }}{{ $name }},
+    {{ end }}
+
+};
+
+
 TokenName ReservedWordToToken(const char* w);
 
 const char* TokenNameToString(TokenName n);

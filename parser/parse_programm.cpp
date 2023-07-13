@@ -10,7 +10,6 @@
 
 static void funcParams(Parser* p, ListNode* ln)
 {
-
     if (!currTokenHasName(p, ID))
         return;
 
@@ -18,10 +17,8 @@ static void funcParams(Parser* p, ListNode* ln)
 
     while (currTokenHasName(p, ID))
     {
-        FuncParamNode* pn = (FuncParamNode*)calloc(1, sizeof(FuncParamNode));
-        pn->paramName     = getCurrToken(p);
-
-        ListNodeAddChild(ln, NewNodeWithType(pn, NODE_FUNCTION_PARAM));
+        Token* paramName = getCurrToken(p);
+        ListNodeAddChild(ln, NewFuncParamNode(paramName, NULL));
 
         eatToken(p, ID);
 
@@ -36,15 +33,11 @@ static void funcParams(Parser* p, ListNode* ln)
     eatToken(p, FloatType | IntType | BoolType);
 
     for (size_t i = firstVarIdx; i < ln->chLen; i++)
-    {
         ln->children[i].fpn->typeName = type;
-    }
 }
 
 static ListNode* funcParamsList(Parser* p)
 {
-    if (p->HasErr)
-        return NULL;
 
     Node ln = NewListNode(NODE_PARAMS_LIST);
 
@@ -54,6 +47,8 @@ static ListNode* funcParamsList(Parser* p)
     {
         eatToken(p, COMMA);
         funcParams(p, ln.ln);
+        if (p->HasErr)
+            return ln.ln;
     }
 
     return ln.ln;
@@ -61,13 +56,10 @@ static ListNode* funcParamsList(Parser* p)
 
 static Node funcDecl(Parser* p)
 {
-
     eatToken(p, FUNC);
 
     Token* fName = getCurrToken(p);
     eatToken(p, ID);
-    if (p->HasErr)
-        return Node{};
 
     eatToken(p, LPAREN);
 
@@ -76,7 +68,7 @@ static Node funcDecl(Parser* p)
     eatToken(p, RPAREN);
 
     Token* retType = NULL;
-    if (!currTokenHasName(p, LBRACE))
+    if (currTokenHasName(p, FloatType | IntType | BoolType))
     {
         retType = getCurrToken(p);
         eatToken(p, FloatType | IntType | BoolType);

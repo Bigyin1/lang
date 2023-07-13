@@ -30,11 +30,14 @@ static Node varDecl(Parser* p)
 
 Node compoundStmt(Parser* p)
 {
-    Node ln = NewListNode(NODE_COMPOUND_STMT);
+    if (p->HasErr)
+        return Node{};
 
     eatToken(p, LBRACE);
 
-    for (; !currTokenHasName(p, RBRACE);)
+    Node ln = NewListNode(NODE_COMPOUND_STMT);
+
+    while (!currTokenHasName(p, RBRACE))
     {
         if (currTokenHasName(p, VAR))
             ListNodeAddChild(ln.ln, varDecl(p));
@@ -52,6 +55,8 @@ Node compoundStmt(Parser* p)
 
 static Node assignStmt(Parser* p)
 {
+    if (p->HasErr)
+        return Node{};
 
     Node var = NewValNode(getCurrToken(p));
     eatToken(p, ID);
@@ -66,6 +71,8 @@ static Node assignStmt(Parser* p)
 
 static Node selectionStmt(Parser* p)
 {
+    if (p->HasErr)
+        return Node{};
 
     Token* ifTok = getCurrToken(p);
     eatToken(p, IF);
@@ -89,6 +96,8 @@ static Node selectionStmt(Parser* p)
 
 static Node iterationStmt(Parser* p)
 {
+    if (p->HasErr)
+        return Node{};
 
     Token* forTok = getCurrToken(p);
     eatToken(p, FOR);
@@ -102,6 +111,8 @@ static Node iterationStmt(Parser* p)
 
 static Node jumpStmt(Parser* p)
 {
+    if (p->HasErr)
+        return Node{};
 
     Token* op     = getCurrToken(p);
     Node   retVal = {};
@@ -125,6 +136,8 @@ static Node jumpStmt(Parser* p)
 
 Node stmt(Parser* p)
 {
+    if (p->HasErr)
+        return Node{};
 
     if (currTokenHasName(p, LBRACE))
         return compoundStmt(p);
@@ -136,7 +149,7 @@ Node stmt(Parser* p)
             return assignStmt(p);
 
         if (next == LPAREN)
-            return NewNodeWithType(funccall(p), NODE_FUNCTION_CALL);
+            return funccall(p);
     }
 
     if (currTokenHasName(p, IF))
@@ -147,6 +160,8 @@ Node stmt(Parser* p)
 
     if (currTokenHasName(p, BREAK | CONTINUE | RETURN))
         return jumpStmt(p);
+
+    emitError(p, LBRACE | ID | IF | FOR | BREAK | CONTINUE | RETURN);
 
     return Node{};
 }

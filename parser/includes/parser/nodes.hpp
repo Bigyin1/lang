@@ -20,7 +20,6 @@ enum NodeType
     NODE_VAL,
     NODE_IF_STMT,
     NODE_FOR_STMT,
-    // NODE_JUMP_STMT,
     NODE_BINOP,
     NODE_UNOP,
 };
@@ -46,7 +45,7 @@ struct Node
     NodeHeader hdr;
     union
     {
-        void*          gen;
+        void*          rawPtr;
         ListNode*      ln;
         ValNode*       vn;
         VarDeclNode*   vdn;

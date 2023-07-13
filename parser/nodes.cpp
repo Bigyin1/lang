@@ -107,12 +107,156 @@ Node NewFuncDeclNode(Token* name, ListNode* params, Token* ret, ListNode* body)
     return NewNodeWithType(fdn, NODE_FUNCTION_DECL);
 }
 
+Node NewFuncParamNode(Token* paramName, Token* paramType)
+{
+
+    FuncParamNode* pn = (FuncParamNode*)calloc(1, sizeof(FuncParamNode));
+    pn->paramName     = paramName;
+    pn->typeName      = paramType;
+
+    return NewNodeWithType(pn, NODE_FUNCTION_PARAM);
+}
+
+Node NewFuncCallNode(Token* name, ListNode* args)
+{
+    FuncCallNode* fcn = (FuncCallNode*)calloc(1, sizeof(FuncCallNode));
+    fcn->fName        = name;
+
+    fcn->args = args;
+
+    return NewNodeWithType(fcn, NODE_FUNCTION_CALL);
+}
+
 Node NewNodeWithType(void* n, NodeType t)
 {
     Node node     = {};
     node.hdr.type = t;
 
-    node.gen = n;
+    node.rawPtr = n;
 
     return node;
+}
+
+static void freeListNode(ListNode* ln)
+{
+
+    for (size_t i = 0; i < ln->chLen; i++)
+        FreeNode(ln->children[i]);
+
+    free(ln->children);
+
+    free(ln);
+}
+
+static void freeBinOpNode(BinOpNode* bopn)
+{
+
+    FreeNode(bopn->left);
+    FreeNode(bopn->right);
+
+    free(bopn);
+}
+
+static void freeUnOpNode(UnOpNode* uopn)
+{
+
+    FreeNode(uopn->child);
+
+    free(uopn);
+}
+
+static void freeValNode(ValNode* valn) { free(valn); }
+
+static void freeVarDeclNode(VarDeclNode* vdn)
+{
+
+    FreeNode(vdn->initVal);
+
+    free(vdn);
+}
+
+static void freeIfStmtNode(IfStmtNode* ifstn)
+{
+
+    FreeNode(ifstn->cond);
+    freeListNode(ifstn->body);
+    FreeNode(ifstn->elseBody);
+
+    free(ifstn);
+}
+
+static void freeForStmtNode(ForStmtNode* fstn)
+{
+    FreeNode(fstn->cond);
+    freeListNode(fstn->body);
+
+    free(fstn);
+}
+
+static void freeFuncDeclNode(FuncDeclNode* fdn)
+{
+
+    freeListNode(fdn->params);
+    freeListNode(fdn->body);
+    free(fdn);
+}
+
+static void freeFuncParamNode(FuncParamNode* fpn) { free(fpn); }
+
+static void freeFuncCallNode(FuncCallNode* fcn)
+{
+
+    freeListNode(fcn->args);
+    free(fcn);
+}
+
+void FreeNode(Node n)
+{
+
+    switch (n.hdr.type)
+    {
+        case NODE_EMTY:
+            return;
+
+        case NODE_COMPOUND_STMT:
+        case NODE_ARGS_LIST:
+        case NODE_PARAMS_LIST:
+        case NODE_PROGRAMM:
+            freeListNode(n.ln);
+            break;
+
+        case NODE_BINOP:
+            freeBinOpNode(n.bopn);
+            break;
+        case NODE_UNOP:
+            freeUnOpNode(n.uopn);
+            break;
+        case NODE_VAL:
+            freeValNode(n.vn);
+            break;
+        case NODE_VAR_DECL:
+            freeVarDeclNode(n.vdn);
+            break;
+        case NODE_IF_STMT:
+            freeIfStmtNode(n.ifstn);
+            break;
+        case NODE_FOR_STMT:
+            freeForStmtNode(n.forstn);
+            break;
+
+        case NODE_FUNCTION_DECL:
+            freeFuncDeclNode(n.fdn);
+            break;
+
+        case NODE_FUNCTION_PARAM:
+            freeFuncParamNode(n.fpn);
+            break;
+
+        case NODE_FUNCTION_CALL:
+            freeFuncCallNode(n.fcn);
+            break;
+
+        default:
+            abort();
+    }
 }

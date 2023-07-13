@@ -12,4 +12,6 @@ void eatToken(Parser* p, TokenNamesSet exp);
 
 TokenName peek(Parser* p);
 
+void emitError(Parser* p, TokenNamesSet exp);
+
 #endif

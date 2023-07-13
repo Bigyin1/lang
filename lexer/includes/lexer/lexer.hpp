@@ -26,6 +26,10 @@ struct Token
     unsigned Col;
 };
 
+// void PrintToken(Token* tok, FILE* out) {
+
+// }
+
 struct Lexer
 {
     char* input;

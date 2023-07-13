@@ -22,6 +22,10 @@ Node NewForStmtNode(Token* op, Node cond, ListNode* body);
 
 Node NewFuncDeclNode(Token* name, ListNode* params, Token* ret, ListNode* body);
 
+Node NewFuncParamNode(Token* paramName, Token* paramType);
+
+Node NewFuncCallNode(Token* name, ListNode* args);
+
 Node NewNodeWithType(void* n, NodeType t);
 
 #endif

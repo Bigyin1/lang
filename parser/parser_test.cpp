@@ -75,7 +75,20 @@ int main(int argc, char** argv)
 
     Run(&p);
 
+    if (p.HasErr)
+    {
+        PrintParserError(&p.Err, stdout);
+        FreeNode(p.prog);
+        DestructLexer(&l);
+
+        fclose(dotOut);
+        return 1;
+    }
+
     GenGraph(dotOut, p.prog);
+    FreeNode(p.prog);
+
+    DestructLexer(&l);
 
     fclose(dotOut);
 }

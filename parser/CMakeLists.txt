@@ -18,4 +18,4 @@ add_executable(parserTest parser_test.cpp)
 target_link_libraries(parserTest PRIVATE
     parser lexer project_options project_warnings)
 
-add_test(NAME parserTest COMMAND parserTest test.og tree.dot WORKING_DIRECTORY testdata)
+add_test(NAME parserTest COMMAND parserTest test.og tree.dot WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/testdata)

@@ -14,6 +14,6 @@ struct UnexpTokenError
     TokenNamesSet exp;
 };
 
-void Error(UnexpTokenError* e, FILE* out);
+void PrintParserError(UnexpTokenError* e, FILE* out);
 
 #endif

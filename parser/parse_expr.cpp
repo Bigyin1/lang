@@ -7,6 +7,8 @@
 
 static ListNode* funcArgs(Parser* p)
 {
+    if (p->HasErr)
+        return NULL;
 
     Node ln = NewListNode(NODE_ARGS_LIST);
 
@@ -23,26 +25,29 @@ static ListNode* funcArgs(Parser* p)
     return ln.ln;
 }
 
-FuncCallNode* funccall(Parser* p)
+Node funccall(Parser* p)
 {
+    if (p->HasErr)
+        return Node{};
+
     Token* fName = getCurrToken(p);
     eatToken(p, ID);
 
     eatToken(p, LPAREN);
 
-    FuncCallNode* fcn = (FuncCallNode*)calloc(1, sizeof(FuncCallNode));
-    fcn->fName        = fName;
-
+    ListNode* args = NULL;
     if (!currTokenHasName(p, RPAREN))
-        fcn->args = funcArgs(p);
+        args = funcArgs(p);
 
     eatToken(p, RPAREN);
 
-    return fcn;
+    return NewFuncCallNode(fName, args);
 }
 
 static Node factor(Parser* p)
 {
+    if (p->HasErr)
+        return Node{};
 
     if (currTokenHasName(p, MINUS))
     {
@@ -55,7 +60,7 @@ static Node factor(Parser* p)
     if (currTokenHasName(p, Integer | Float | TRUE | FALSE | ID))
     {
         if (currTokenHasName(p, ID) && peek(p) == LPAREN)
-            return NewNodeWithType(funccall(p), NODE_FUNCTION_CALL);
+            return funccall(p);
 
         Token* val = getCurrToken(p);
         eatToken(p, val->n);
@@ -63,8 +68,11 @@ static Node factor(Parser* p)
         return NewValNode(val);
     }
 
-    if (!currTokenHasName(p, LPAREN | Integer | Float | TRUE | FALSE | ID | MINUS))
+    if (!currTokenHasName(p, LPAREN))
+    {
+        emitError(p, LPAREN | Integer | Float | TRUE | FALSE | ID | MINUS);
         return Node{};
+    }
 
     eatToken(p, LPAREN);
 
@@ -77,6 +85,8 @@ static Node factor(Parser* p)
 
 static Node term(Parser* p)
 {
+    if (p->HasErr)
+        return Node{};
 
     Node l = factor(p);
 
@@ -89,6 +99,8 @@ static Node term(Parser* p)
         Node r = factor(p);
 
         l = NewBinOpNode(l, r, op);
+        if (p->HasErr)
+            return l;
     }
 
     return l;
@@ -96,6 +108,8 @@ static Node term(Parser* p)
 
 static Node arithm(Parser* p)
 {
+    if (p->HasErr)
+        return Node{};
 
     Node l = term(p);
 
@@ -108,6 +122,8 @@ static Node arithm(Parser* p)
         Node r = term(p);
 
         l = NewBinOpNode(l, r, op);
+        if (p->HasErr)
+            return l;
     }
 
     return l;
@@ -115,6 +131,9 @@ static Node arithm(Parser* p)
 
 Node expr(Parser* p)
 {
+    if (p->HasErr)
+        return Node{};
+
     Node l = arithm(p);
 
     if (currTokenHasName(p, EQ | NE | GT | GE | LT | LE | NE))

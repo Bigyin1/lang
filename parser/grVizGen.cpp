@@ -2,11 +2,10 @@
 
 #include "lexer/lexemes.hpp"
 
-static const char* header = "digraph expr {"
-                            "fontname=\"Helvetica,Arial,sans-serif\""
-                            "node [fontname=\"Helvetica,Arial,sans-serif\"]"
-                            "edge [fontname=\"Helvetica,Arial,sans-serif\"]"
-                            "node [shape=box];";
+static void generateConnection(void* fromNodeAddr, void* toNodeAddr, FILE* out)
+{
+    fprintf(out, "\nN%p -> N%p", fromNodeAddr, toNodeAddr);
+}
 
 static void walkNode(Node n, FILE* out);
 
@@ -16,19 +15,14 @@ static void walkListNode(ListNode* ln, FILE* out, const char* name)
     fprintf(out, "\nN%p[\n label=<%s>\n]", ln, name);
 
     for (size_t i = 0; i < ln->chLen; i++)
-    {
         walkNode(ln->children[i], out);
-    }
 
     for (size_t i = 0; i < ln->chLen; i++)
-    {
-        fprintf(out, "\nN%p -> N%p", ln, ln->children[i].gen);
-    }
+        generateConnection(ln, ln->children[i].rawPtr, out);
 }
 
 static void walkFuncDecl(FuncDeclNode* fd, FILE* out)
 {
-
     fprintf(out,
             "\nN%p[\nshape=record\n"
             "label=<func | %s | %s>\n]",
@@ -37,8 +31,8 @@ static void walkFuncDecl(FuncDeclNode* fd, FILE* out)
     walkListNode(fd->params, out, "Parameters");
     walkListNode(fd->body, out, "Body");
 
-    fprintf(out, "\nN%p -> N%p", fd, fd->params);
-    fprintf(out, "\nN%p -> N%p", fd, fd->body);
+    generateConnection(fd, fd->params, out);
+    generateConnection(fd, fd->body, out);
 }
 
 static void walkFuncParam(FuncParamNode* pn, FILE* out)
@@ -56,7 +50,7 @@ static void walkFuncCall(FuncCallNode* fcn, FILE* out)
 
     walkListNode(fcn->args, out, "Arguments");
 
-    fprintf(out, "\nN%p -> N%p", fcn, fcn->args);
+    generateConnection(fcn, fcn->args, out);
 }
 
 static void walkVarDecl(VarDeclNode* vdn, FILE* out)
@@ -69,7 +63,8 @@ static void walkVarDecl(VarDeclNode* vdn, FILE* out)
 
     walkNode(vdn->initVal, out);
 
-    fprintf(out, "\nN%p -> N%p", vdn, vdn->initVal.gen);
+    if (vdn->initVal.hdr.type != NODE_EMTY)
+        generateConnection(vdn, vdn->initVal.rawPtr, out);
 }
 
 static void walkValue(ValNode* vn, FILE* out)
@@ -108,10 +103,11 @@ static void walkIfStmt(IfStmtNode* ifstmt, FILE* out)
     walkListNode(ifstmt->body, out, "Body");
     walkNode(ifstmt->elseBody, out);
 
-    fprintf(out, "\nN%p -> N%p", ifstmt, ifstmt->cond.gen);
-    fprintf(out, "\nN%p -> N%p", ifstmt, ifstmt->body);
+    generateConnection(ifstmt, ifstmt->cond.rawPtr, out);
+    generateConnection(ifstmt, ifstmt->body, out);
+
     if (ifstmt->elseBody.hdr.type != NODE_EMTY)
-        fprintf(out, "\nN%p -> N%p", ifstmt, ifstmt->elseBody.gen);
+        generateConnection(ifstmt, ifstmt->elseBody.rawPtr, out);
 }
 
 static void walkForStmt(ForStmtNode* forstmt, FILE* out)
@@ -121,8 +117,8 @@ static void walkForStmt(ForStmtNode* forstmt, FILE* out)
     walkNode(forstmt->cond, out);
     walkListNode(forstmt->body, out, "Body");
 
-    fprintf(out, "\nN%p -> N%p", forstmt, forstmt->cond.gen);
-    fprintf(out, "\nN%p -> N%p", forstmt, forstmt->body);
+    generateConnection(forstmt, forstmt->cond.rawPtr, out);
+    generateConnection(forstmt, forstmt->body, out);
 }
 
 static void walkBinOp(BinOpNode* bopn, FILE* out)
@@ -133,8 +129,8 @@ static void walkBinOp(BinOpNode* bopn, FILE* out)
     walkNode(bopn->left, out);
     walkNode(bopn->right, out);
 
-    fprintf(out, "\nN%p -> N%p", bopn, bopn->left.gen);
-    fprintf(out, "\nN%p -> N%p", bopn, bopn->right.gen);
+    generateConnection(bopn, bopn->left.rawPtr, out);
+    generateConnection(bopn, bopn->right.rawPtr, out);
 }
 
 static void walkUnOp(UnOpNode* uopn, FILE* out)
@@ -145,7 +141,7 @@ static void walkUnOp(UnOpNode* uopn, FILE* out)
     walkNode(uopn->child, out);
 
     if (uopn->child.hdr.type != NODE_EMTY)
-        fprintf(out, "\nN%p -> N%p", uopn, uopn->child.gen);
+        generateConnection(uopn, uopn->child.rawPtr, out);
 }
 
 static void walkNode(Node n, FILE* out)
@@ -186,10 +182,6 @@ static void walkNode(Node n, FILE* out)
         case NODE_FOR_STMT:
             return walkForStmt(n.forstn, out);
 
-            // case NODE_JUMP_STMT:
-            //     walkJumpStmt(n, out);
-            //     break;
-
         case NODE_BINOP:
             return walkBinOp(n.bopn, out);
 
@@ -200,6 +192,12 @@ static void walkNode(Node n, FILE* out)
             return;
     }
 }
+
+static const char* header = "digraph expr {"
+                            "fontname=\"Helvetica,Arial,sans-serif\""
+                            "node [fontname=\"Helvetica,Arial,sans-serif\"]"
+                            "edge [fontname=\"Helvetica,Arial,sans-serif\"]"
+                            "node [shape=box];";
 
 void GenGraph(FILE* out, Node n)
 {
