@@ -6,7 +6,7 @@
 
 enum NodeType
 {
-    NODE_EMTY = 0,
+    NODE_EMPTY = 0,
 
     NODE_PROGRAMM,
     NODE_COMPOUND_STMT,

@@ -63,7 +63,7 @@ static void walkVarDecl(VarDeclNode* vdn, FILE* out)
 
     walkNode(vdn->initVal, out);
 
-    if (vdn->initVal.hdr.type != NODE_EMTY)
+    if (vdn->initVal.hdr.type != NODE_EMPTY)
         generateConnection(vdn, vdn->initVal.rawPtr, out);
 }
 
@@ -106,7 +106,7 @@ static void walkIfStmt(IfStmtNode* ifstmt, FILE* out)
     generateConnection(ifstmt, ifstmt->cond.rawPtr, out);
     generateConnection(ifstmt, ifstmt->body, out);
 
-    if (ifstmt->elseBody.hdr.type != NODE_EMTY)
+    if (ifstmt->elseBody.hdr.type != NODE_EMPTY)
         generateConnection(ifstmt, ifstmt->elseBody.rawPtr, out);
 }
 
@@ -140,7 +140,7 @@ static void walkUnOp(UnOpNode* uopn, FILE* out)
 
     walkNode(uopn->child, out);
 
-    if (uopn->child.hdr.type != NODE_EMTY)
+    if (uopn->child.hdr.type != NODE_EMPTY)
         generateConnection(uopn, uopn->child.rawPtr, out);
 }
 
@@ -149,7 +149,7 @@ static void walkNode(Node n, FILE* out)
 
     switch (n.hdr.type)
     {
-        case NODE_EMTY:
+        case NODE_EMPTY:
             return;
 
         case NODE_PROGRAMM:

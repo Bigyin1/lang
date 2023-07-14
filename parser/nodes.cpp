@@ -215,7 +215,7 @@ void FreeNode(Node n)
 
     switch (n.hdr.type)
     {
-        case NODE_EMTY:
+        case NODE_EMPTY:
             return;
 
         case NODE_COMPOUND_STMT:
