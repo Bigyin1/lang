@@ -112,6 +112,18 @@ var ConstantLexemes = []LexemeMeta{
 		TokenName: "NE",
 	},
 	{
+		Lexeme:    "!",
+		TokenName: "NOT",
+	},
+	{
+		Lexeme:    "||",
+		TokenName: "LOR",
+	},
+	{
+		Lexeme:    "&&",
+		TokenName: "LAND",
+	},
+	{
 		Lexeme:    "return",
 		TokenName: "RETURN",
 	},

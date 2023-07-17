@@ -86,6 +86,15 @@ TokenName ReservedWordToToken(const char* w) {
     if (strcmp(w, "!=") == 0)
         return NE;
      
+    if (strcmp(w, "!") == 0)
+        return NOT;
+     
+    if (strcmp(w, "||") == 0)
+        return LOR;
+     
+    if (strcmp(w, "&&") == 0)
+        return LAND;
+     
     if (strcmp(w, "return") == 0)
         return RETURN;
      
@@ -208,6 +217,18 @@ const char* TokenNameToString(TokenName n) {
     
     if (NE == n) {
         return "NE";
+    }
+    
+    if (NOT == n) {
+        return "NOT";
+    }
+    
+    if (LOR == n) {
+        return "LOR";
+    }
+    
+    if (LAND == n) {
+        return "LAND";
     }
     
     if (RETURN == n) {

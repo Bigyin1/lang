@@ -49,10 +49,10 @@ static Node factor(Parser* p)
     if (p->HasErr)
         return Node{};
 
-    if (currTokenHasName(p, MINUS))
+    if (currTokenHasName(p, MINUS | NOT))
     {
         Token* op = getCurrToken(p);
-        eatToken(p, MINUS);
+        eatToken(p, MINUS | NOT);
 
         return NewUnOpNode(factor(p), op);
     }
@@ -70,7 +70,7 @@ static Node factor(Parser* p)
 
     if (!currTokenHasName(p, LPAREN))
     {
-        emitError(p, LPAREN | Integer | Float | TRUE | FALSE | ID | MINUS);
+        emitError(p, LPAREN | Integer | Float | TRUE | FALSE | ID | MINUS | NOT);
         return Node{};
     }
 
@@ -90,7 +90,7 @@ static Node term(Parser* p)
 
     Node l = factor(p);
 
-    while (currTokenHasName(p, MULT | DIV))
+    while (currTokenHasName(p, MULT | DIV | LAND))
     {
 
         Token* op = getCurrToken(p);
@@ -113,7 +113,7 @@ static Node arithm(Parser* p)
 
     Node l = term(p);
 
-    while (currTokenHasName(p, PLUS | MINUS))
+    while (currTokenHasName(p, PLUS | MINUS | LOR))
     {
 
         Token* op = getCurrToken(p);

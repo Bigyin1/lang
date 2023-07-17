@@ -39,11 +39,12 @@ jump_stmt :  BREAK
 
 expr : arithm (relop arithm)?
 
-arithm : term ((PLUS | MINUS) term)*
+arithm : term ((PLUS | MINUS | LOR) term)*
 
-term : factor ((MULT | DIV) factor)*
+term : factor ((MULT | DIV | LAND) factor)*
 
 factor :  MINUS factor
+        | NOT factor
         | INTEGER
         | FLOAT
         | TRUE
