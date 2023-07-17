@@ -1,0 +1,28 @@
+
+
+func main(a, b int , cd float, j float) int {
+
+    var a int = true
+
+    if a + 1 {
+        {
+            var a bool = false
+        }
+
+        main(1, 2+3 -5 / 3.13,  3.1, true >= false)
+        return 1.1
+    }
+
+
+
+    for 1 < 0 {
+        return a
+        break
+    }
+
+    continue
+
+    return 0
+
+}
+
