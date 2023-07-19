@@ -96,5 +96,7 @@ TokenName ReservedWordToToken(const char* w);
 
 const char* TokenNameToString(TokenName n);
 
+const char* TokenNameToLexeme(TokenName n);
+
 
 #endif

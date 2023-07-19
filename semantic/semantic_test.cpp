@@ -82,6 +82,10 @@ int main(int argc, char** argv)
 
     RunSemCheck(&ch, p.prog.ln);
 
+    for (size_t i = 0; i < ch.errsSz; i++)
+        PrintError(&ch.errors[i], stdout);
+
+    FreeSemCheck(&ch);
     FreeNode(p.prog);
     DestructLexer(&l);
 }

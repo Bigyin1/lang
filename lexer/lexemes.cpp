@@ -273,5 +273,165 @@ const char* TokenNameToString(TokenName n) {
     exit(1);
 }
 
+const char* TokenNameToLexeme(TokenName n) {
+    
+    if (FOR == n) {
+        return "for";
+    }
+    
+    if (IF == n) {
+        return "if";
+    }
+    
+    if (ELSE == n) {
+        return "else";
+    }
+    
+    if (VAR == n) {
+        return "var";
+    }
+    
+    if (IntType == n) {
+        return "int";
+    }
+    
+    if (FloatType == n) {
+        return "float";
+    }
+    
+    if (BoolType == n) {
+        return "bool";
+    }
+    
+    if (TRUE == n) {
+        return "true";
+    }
+    
+    if (FALSE == n) {
+        return "false";
+    }
+    
+    if (PLUS == n) {
+        return "+";
+    }
+    
+    if (MINUS == n) {
+        return "-";
+    }
+    
+    if (MULT == n) {
+        return "*";
+    }
+    
+    if (DIV == n) {
+        return "/";
+    }
+    
+    if (LPAREN == n) {
+        return "(";
+    }
+    
+    if (RPAREN == n) {
+        return ")";
+    }
+    
+    if (LBRACKET == n) {
+        return "[";
+    }
+    
+    if (RBRACKET == n) {
+        return "]";
+    }
+    
+    if (LBRACE == n) {
+        return "{";
+    }
+    
+    if (RBRACE == n) {
+        return "}";
+    }
+    
+    if (ASSIGN == n) {
+        return "=";
+    }
+    
+    if (EQ == n) {
+        return "==";
+    }
+    
+    if (GE == n) {
+        return ">=";
+    }
+    
+    if (GT == n) {
+        return ">";
+    }
+    
+    if (LE == n) {
+        return "<=";
+    }
+    
+    if (LT == n) {
+        return "<";
+    }
+    
+    if (NE == n) {
+        return "!=";
+    }
+    
+    if (NOT == n) {
+        return "!";
+    }
+    
+    if (LOR == n) {
+        return "||";
+    }
+    
+    if (LAND == n) {
+        return "&&";
+    }
+    
+    if (RETURN == n) {
+        return "return";
+    }
+    
+    if (BREAK == n) {
+        return "break";
+    }
+    
+    if (CONTINUE == n) {
+        return "continue";
+    }
+    
+    if (FUNC == n) {
+        return "func";
+    }
+    
+    if (COMMA == n) {
+        return ",";
+    }
+    
+
+    
+    if (Integer == n) {
+        return "";
+    }
+    
+    if (Float == n) {
+        return "";
+    }
+    
+    if (ID == n) {
+        return "";
+    }
+    
+
+    if (TokEOF == n) {
+            return "";
+    }
+
+    exit(1);
+}
+
 
 

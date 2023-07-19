@@ -36,7 +36,6 @@ void DestructLexer(Lexer* l)
 
 void Run(Lexer* l)
 {
-
     lexProgramm(l);
 
     emit(l, TokEOF);

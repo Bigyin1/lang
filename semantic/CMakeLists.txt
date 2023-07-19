@@ -2,6 +2,7 @@ add_library(semantic
     scope.cpp
     symtab.cpp
     semantic.cpp
+    errors.cpp
 )
 
 target_link_libraries(semantic

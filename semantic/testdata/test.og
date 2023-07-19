@@ -1,8 +1,14 @@
 
+func sum(a, b int) int {
+
+    return a + b
+}
 
 func main(a, b int , cd float, j float) int {
 
     var a int = true
+
+    a(1)
 
     if a + 1 {
         {
@@ -13,16 +19,15 @@ func main(a, b int , cd float, j float) int {
         return 1.1
     }
 
-
-
     for 1 < 0 {
         return a
         break
     }
 
+    var bb float = sum(1 + 2, a)
+
     continue
 
     return 0
-
 }
 

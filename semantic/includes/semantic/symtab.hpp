@@ -3,28 +3,32 @@
 #define SEMANTIC_SYMTAB_PUBLIC_HPP
 
 #include "parser/nodes.hpp"
+#include "semantic/types.hpp"
+
+enum SymbolClass
+{
+    SYM_VAR,
+    SYM_FUNC,
+    SYM_TYPE_DEF,
+};
 
 struct Symbol
 {
-    union
-    {
-        TokenName     Type;
-        FuncDeclNode* FuncType;
-    };
+    SymbolClass sclass;
 
-    Token*      Tok;
-    const char* Name;
+    Type* type;
+
+    Token*      tok;
+    const char* name;
 };
 
 struct SymTable
 {
-    Symbol* symbols;
-    size_t  symLen;
-    size_t  symCap;
+    Symbol** symbols;
+    size_t   symLen;
+    size_t   symCap;
 };
 
-Symbol* GetSymbolByName(SymTable* tab, const char* name);
-
-Symbol* AddNewSymbol(SymTable* tab, Symbol sym);
+void FreeSymTable(SymTable* tab);
 
 #endif

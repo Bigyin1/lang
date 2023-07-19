@@ -19,4 +19,8 @@ struct ScopeNode
 
 Symbol* GetSymbolByNameFromScope(ScopeNode* sc, const char* name);
 
+Type* GetTypeByNameFromScope(ScopeNode* sc, const char* tname);
+
+void FreeScope(ScopeNode* sc);
+
 #endif

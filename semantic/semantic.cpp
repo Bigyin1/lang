@@ -1,232 +1,200 @@
 
+#include <stdlib.h>
+
+#include "errors.hpp"
 #include "scope.hpp"
 #include "semantic/checker.hpp"
 
-// static bool typesAreEqual(Token* typeName1, Token* typeName2)
-// {
+const Type* intTypeObj;
+const Type* floatTypeObj;
+const Type* boolTypeObj;
 
-//     if (typeName1->n == typeName2->n)
-//         return true;
+static bool areEqTypes(const Type* t1, const Type* t2)
+{
+    if (t1 == NULL || t2 == NULL)
+        return false;
 
-//     return false;
+    if (t1->tclass != TypeClassBase || t2->tclass != TypeClassBase) // TODO: complex types
+    {
+        return false;
+    }
 
-// } // TODO: complex types
+    return t1->bt == t2->bt;
+}
 
-static TokenName checkSimpleStmt(SemanticChecker* sch, ScopeNode* curr, Node n);
+static const Type* checkSimpleStmt(SemanticChecker* sch, ScopeNode* curr, Node n);
 
 static void walkInnerScope(SemanticChecker* sch, ScopeNode* curr, Node n);
 
-static TokenName checkValue(SemanticChecker* sch, ScopeNode* curr, ValNode* v)
+static const Type* checkValue(SemanticChecker* sch, ScopeNode* curr, ValNode* v)
 {
-    switch (v->val->n)
+    TokenName valType = v->val->n;
+    switch (valType)
     {
         case TRUE:
         case FALSE:
-            return BoolType;
+            return boolTypeObj;
 
         case Integer:
-            return IntType;
+            return intTypeObj;
         case Float:
-            return FloatType;
+            return floatTypeObj;
 
         case ID:
         {
             Symbol* sym = GetSymbolByNameFromScope(curr, v->val->StrVal);
             if (sym == NULL)
             {
-                printf("undefined variable: %s; row %u, col: %u\n", v->val->StrVal, v->val->Row,
-                       v->val->Col);
-                return TokEOF;
+                AddNewErr(sch, NewUndefSymbErr(v->val));
+                return NULL;
             }
-            return sym->Type;
+            return sym->type;
         }
 
         default:
-            break;
+            return NULL;
     }
 }
 
-static TokenName checkUnOp(SemanticChecker* sch, ScopeNode* curr, UnOpNode* uopn)
+static const Type* checkUnOp(SemanticChecker* sch, ScopeNode* curr, UnOpNode* uopn)
 {
-    TokenName chType = checkSimpleStmt(sch, curr, uopn->child);
-    if (uopn->child.hdr.type != NODE_EMPTY && chType == TokEOF)
-        return TokEOF;
+    const Type* chType = checkSimpleStmt(sch, curr, uopn->child);
+    if (uopn->child.hdr.type != NODE_EMPTY && chType == NULL)
+        return NULL;
 
     TokenName op = uopn->op->n;
 
     if (op & NOT)
     {
-        if (chType != BoolType)
-        {
-            printf("boolean type wanted for %s opeartion; row %u, col: %u\n", TokenNameToString(op),
-                   uopn->op->Row, uopn->op->Col);
-            return TokEOF;
-        }
+        if (areEqTypes(chType, boolTypeObj))
+            AddNewErr(sch, NewUndefOpErr(uopn->op, chType));
     }
 
     if (op & MINUS)
     {
-        if (!(chType & (IntType | FloatType)))
-        {
-            printf("int or float type wanted for %s opeartion; row %u, col: %u\n",
-                   TokenNameToString(op), uopn->op->Row, uopn->op->Col);
-            return TokEOF;
-        }
+        if (!areEqTypes(chType, intTypeObj) && !areEqTypes(chType, floatTypeObj))
+            AddNewErr(sch, NewUndefOpErr(uopn->op, chType));
     }
 
     if (op & RETURN)
     {
-        if (chType != sch->currFunc->retTypeName->n)
-        {
-            printf("retrun stmt at line %u: wrong type: %s, must return %s\n", uopn->op->Row,
-                   TokenNameToString(chType), TokenNameToString(sch->currFunc->retTypeName->n));
-        }
+        const Type* currFuncRetType =
+            GetSymbolByNameFromScope(curr, sch->currFunc->fName->StrVal)->type->ft.retType;
+
+        if (!areEqTypes(chType, currFuncRetType))
+            AddNewErr(sch, NewBadRetType(chType, currFuncRetType, uopn->op));
     }
 
     if (op & (BREAK | CONTINUE))
     {
         if (sch->currCycle == NULL)
-        {
-            printf("%s at line %u is outside any cycle block\n", TokenNameToString(op),
-                   uopn->op->Row);
-        }
+            AddNewErr(sch, NewJmpOutsideLoopErr(uopn->op));
     }
 
-    return TokEOF;
+    return NULL;
 }
 
-static TokenName checkBinOp(SemanticChecker* sch, ScopeNode* curr, BinOpNode* bopn)
+static const Type* checkBinOp(SemanticChecker* sch, ScopeNode* curr, BinOpNode* bopn)
 {
+    const Type* lType = checkSimpleStmt(sch, curr, bopn->left);
+    const Type* rType = checkSimpleStmt(sch, curr, bopn->right);
 
-    TokenName lType = checkSimpleStmt(sch, curr, bopn->left);
-    TokenName rType = checkSimpleStmt(sch, curr, bopn->right);
+    if (lType == NULL || rType == NULL)
+        return NULL;
 
-    if (lType == TokEOF || rType == TokEOF)
-        return TokEOF;
-
-    if (lType != rType)
+    if (!areEqTypes(lType, rType))
     {
-        printf("arguments types mismatch for %s; row %u, col: %u\n", TokenNameToString(bopn->op->n),
-               bopn->op->Row, bopn->op->Col);
-        return TokEOF;
+        AddNewErr(sch, NewTypesMismatchErr(lType, rType, bopn->op));
+        return NULL;
     }
 
     TokenName op = bopn->op->n;
 
     if (op & (LAND | LOR))
     {
-        if (lType != BoolType)
+        if (!areEqTypes(lType, boolTypeObj))
         {
-            printf("boolean type wanted for %s opeartion; row %u, col: %u\n",
-                   TokenNameToString(bopn->op->n), bopn->op->Row, bopn->op->Col);
-            return TokEOF;
+            AddNewErr(sch, NewUndefOpErr(bopn->op, lType));
+            return NULL;
         }
 
-        return BoolType;
+        return boolTypeObj;
     }
 
-    if (op & (MULT | DIV | PLUS | MINUS))
+    if (op & (MULT | DIV | PLUS | MINUS | EQ | GE | GT | LE | LT | NE))
     {
-        if (!(lType & (IntType | FloatType)))
+        if (!areEqTypes(lType, intTypeObj) && !areEqTypes(lType, floatTypeObj))
         {
-            printf("int or float type wanted for %s opeartion; row %u, col: %u\n",
-                   TokenNameToString(bopn->op->n), bopn->op->Row, bopn->op->Col);
-            return TokEOF;
+            AddNewErr(sch, NewUndefOpErr(bopn->op, lType));
+            return NULL;
         }
 
-        return lType;
-    }
-    else if (op & (EQ | GE | GT | LE | LT | NE))
-    {
-        if (!(lType & (IntType | FloatType)))
-        {
-            printf("int or float type wanted for %s opeartion; row %u, col: %u\n",
-                   TokenNameToString(bopn->op->n), bopn->op->Row, bopn->op->Col);
-            return TokEOF;
-        }
+        if (op & (MULT | DIV | PLUS | MINUS))
+            return lType;
 
-        return BoolType;
+        return boolTypeObj;
     }
 
     printf("unreachable");
-    return TokEOF;
+    return NULL;
 }
 
 static void checkVarDecl(SemanticChecker* sch, ScopeNode* curr, VarDeclNode* vdn)
 {
-
     if (vdn->initVal.hdr.type != NODE_EMPTY)
     {
-        TokenName initType = checkSimpleStmt(sch, curr, vdn->initVal);
-        if (initType != TokEOF && initType != vdn->typeName->n)
-        {
-            printf("variable %s initialisation types mismatch: wanted type: %s; init type: %s; row "
-                   "%u, col: %u\n",
-                   vdn->varName->StrVal, TokenNameToString(vdn->typeName->n),
-                   TokenNameToString(initType), vdn->varName->Row, vdn->varName->Col);
-        }
+        const Type* initType = checkSimpleStmt(sch, curr, vdn->initVal);
+        const Type* varType  = GetTypeByNameFromScope(curr, TokenNameToLexeme(vdn->typeName->n));
+
+        if (!areEqTypes(initType, varType))
+            AddNewErr(sch, NewTypesMismatchErr(varType, initType, vdn->varName));
     }
 
-    Symbol var = {
-        .Type = vdn->typeName->n,
-        .Tok  = vdn->varName,
-        .Name = vdn->varName->StrVal,
-    };
-
-    Symbol* redef = AddNewSymbol(&curr->map, var);
-    if (redef != NULL)
-    {
-        printf("variable %s redefenition on row: %u, col: %u; defined on row: %u, col: %u\n",
-               vdn->varName->StrVal, vdn->varName->Row, vdn->varName->Col, redef->Tok->Row,
-               redef->Tok->Col);
-    }
+    Symbol* def = NewVarDef(curr, vdn->typeName, vdn->varName);
+    if (def != NULL)
+        AddNewErr(sch, NewSymbRedefErr(vdn->varName, def));
 }
 
-static TokenName checkFuncCall(SemanticChecker* sch, ScopeNode* curr, FuncCallNode* fcn)
+static const Type* checkFuncCall(SemanticChecker* sch, ScopeNode* curr, FuncCallNode* fcn)
 {
 
-    Symbol* sym = GetSymbolByNameFromScope(curr, fcn->fName->StrVal);
-    if (sym == NULL)
+    Symbol* funcSymb = GetSymbolByNameFromScope(curr, fcn->fName->StrVal);
+    if (funcSymb == NULL)
     {
-        printf("undefined function: %s; row %u, col: %u\n", fcn->fName->StrVal, fcn->fName->Row,
-               fcn->fName->Col);
-        return TokEOF;
+        AddNewErr(sch, NewUndefSymbErr(fcn->fName));
+        return NULL;
     }
 
-    if (sym->FuncType == NULL)
+    if (funcSymb->sclass != SYM_FUNC)
     {
-        printf("unable to call varibale %s; row %u, col: %u\n", fcn->fName->StrVal, fcn->fName->Row,
-               fcn->fName->Col);
-
-        return TokEOF;
+        AddNewErr(sch, NewUncallableSymbErr(funcSymb));
+        return NULL;
     }
 
-    ListNode* args   = fcn->args;
-    ListNode* params = sym->FuncType->params;
+    FuncType ft = funcSymb->type->ft;
 
-    if (args->chLen != params->chLen)
+    ListNode*    args   = fcn->args;
+    const Type** params = ft.paramTypes;
+
+    if (args->chLen != funcSymb->type->ft.paramsSz)
     {
-        printf("wrong arguments count in function %s call; row %u, col: %u\n", fcn->fName->StrVal,
-               fcn->fName->Row, fcn->fName->Col);
-        return sym->FuncType->retTypeName->n;
+        AddNewErr(sch, NewBadFuncCallNEArgs(funcSymb, args->chLen));
+        return ft.retType;
     }
 
     for (size_t i = 0; i < args->chLen; i++)
     {
-        FuncParamNode* currParam = params->children[i].fpn;
+        const Type* currParamType = params[i];
 
-        TokenName argType = checkSimpleStmt(sch, curr, args->children[i]);
-        if (argType == TokEOF)
+        const Type* currArgType = checkSimpleStmt(sch, curr, args->children[i]);
+        if (currArgType == NULL)
             continue;
 
-        if (argType != currParam->typeName->n)
-        {
-            printf("function %s call type mismatch in argument %zu; row %u, col: %u\n",
-                   fcn->fName->StrVal, i + 1, fcn->fName->Row, fcn->fName->Col);
-        }
+        if (!areEqTypes(currArgType, currParamType))
+            AddNewErr(sch, NewFuncArgMismatch(funcSymb, currArgType, i));
     }
 
-    return sym->FuncType->retTypeName->n;
+    return ft.retType;
 }
 
 static void walkBlock(SemanticChecker* sch, ScopeNode* curr, ListNode* ln)
@@ -241,7 +209,7 @@ static void walkBlock(SemanticChecker* sch, ScopeNode* curr, ListNode* ln)
             checkVarDecl(sch, curr, next.vdn);
             continue;
         }
-        if (checkSimpleStmt(sch, curr, next) != TokEOF)
+        if (checkSimpleStmt(sch, curr, next) != NULL)
             continue;
 
         walkInnerScope(sch, curr, next);
@@ -251,12 +219,9 @@ static void walkBlock(SemanticChecker* sch, ScopeNode* curr, ListNode* ln)
 static void walkIfStmt(SemanticChecker* sch, ScopeNode* curr, IfStmtNode* ifstn)
 {
 
-    TokenName condType = checkSimpleStmt(sch, curr, ifstn->cond);
-    if (condType != TokEOF && condType != BoolType)
-    {
-        printf("condition in IF statement must be boolean; row: %u, col: %u\n", ifstn->ifTok->Row,
-               ifstn->ifTok->Col);
-    }
+    const Type* condType = checkSimpleStmt(sch, curr, ifstn->cond);
+    if (!areEqTypes(condType, boolTypeObj))
+        AddNewErr(sch, NewBadCondTypeErr(ifstn->ifTok, condType));
 
     walkBlock(sch, curr, ifstn->body);
     walkInnerScope(sch, curr, ifstn->elseBody);
@@ -265,17 +230,14 @@ static void walkIfStmt(SemanticChecker* sch, ScopeNode* curr, IfStmtNode* ifstn)
 static void walkForStmt(SemanticChecker* sch, ScopeNode* curr, ForStmtNode* forstn)
 {
 
-    TokenName condType = checkSimpleStmt(sch, curr, forstn->cond);
-    if (condType != TokEOF && condType != BoolType)
-    {
-        printf("condition in IF statement must be boolean; row: %u, col: %u\n", forstn->forTok->Row,
-               forstn->forTok->Col);
-    }
+    const Type* condType = checkSimpleStmt(sch, curr, forstn->cond);
+    if (!areEqTypes(condType, boolTypeObj))
+        AddNewErr(sch, NewBadCondTypeErr(forstn->forTok, condType));
 
     walkBlock(sch, curr, forstn->body);
 }
 
-static TokenName checkSimpleStmt(SemanticChecker* sch, ScopeNode* curr, Node n)
+static const Type* checkSimpleStmt(SemanticChecker* sch, ScopeNode* curr, Node n)
 {
 
     switch (n.hdr.type)
@@ -293,7 +255,7 @@ static TokenName checkSimpleStmt(SemanticChecker* sch, ScopeNode* curr, Node n)
             return checkValue(sch, curr, n.vn);
 
         default:
-            return TokEOF;
+            return NULL;
     }
 }
 
@@ -345,63 +307,50 @@ static void walkFunctionScope(SemanticChecker* sch, ScopeNode* curr, FuncDeclNod
     ListNode* params = fdn->params;
     for (size_t i = 0; i < params->chLen; i++)
     {
-
         FuncParamNode* currParam = params->children[i].fpn;
 
-        Symbol glob = {
-            .Type = currParam->typeName->n,
-            .Tok  = currParam->paramName,
-            .Name = currParam->paramName->StrVal,
-        };
-
-        Symbol* redef = AddNewSymbol(&curr->map, glob);
-        if (redef != NULL)
-        {
-            printf(
-                "parameter %s duplicate on row: %u, col: %u; firstly defined on row: %u, col: %u\n",
-                currParam->paramName->StrVal, currParam->paramName->Row, currParam->paramName->Col,
-                redef->Tok->Row, redef->Tok->Col);
-        }
+        Symbol* def = NewVarDef(curr, currParam->typeName, currParam->paramName);
+        if (def != NULL)
+            AddNewErr(sch, NewSymbRedefErr(currParam->paramName, def));
     }
 
     walkBlock(sch, curr, fdn->body);
 }
 
-static ScopeNode* walkGlobalScope(SemanticChecker* sch, ListNode* programm)
+static void walkGlobalScope(SemanticChecker* sch, ListNode* programm)
 {
-    ScopeNode* currScope = NewScopeNode();
-
     for (size_t i = 0; i < programm->chLen; i++)
     {
         FuncDeclNode* currFunc = programm->children[i].fdn;
 
-        Symbol glob = {
-            .FuncType = currFunc,
-            .Tok      = currFunc->fName,
-            .Name     = currFunc->fName->StrVal,
-        };
-
-        Symbol* redef = AddNewSymbol(&currScope->map, glob);
-        if (redef != NULL)
-        {
-            printf("function %s duplicate on row: %u, col: %u\n", currFunc->fName->StrVal,
-                   currFunc->fName->Row, currFunc->fName->Col);
-        }
+        Symbol* def = NewFuncDef(sch->rootScope, currFunc);
+        if (def != NULL)
+            AddNewErr(sch, NewSymbRedefErr(currFunc->fName, def));
     }
 
     for (size_t i = 0; i < programm->chLen; i++)
     {
         ScopeNode* nextScope = NewScopeNode();
-        AddNewScope(currScope, nextScope);
+        AddNewScope(sch->rootScope, nextScope);
 
         walkFunctionScope(sch, nextScope, programm->children[i].fdn);
     }
-
-    return currScope;
 }
 
 void RunSemCheck(SemanticChecker* sch, ListNode* programm)
 {
 
-    sch->rootScope = walkGlobalScope(sch, programm);
+    sch->rootScope = NewScopeNode();
+
+    intTypeObj   = DefineBaseType(sch->rootScope, BaseTypeInteger, TokenNameToLexeme(IntType));
+    floatTypeObj = DefineBaseType(sch->rootScope, BaseTypeFloat64, TokenNameToLexeme(FloatType));
+    boolTypeObj  = DefineBaseType(sch->rootScope, BaseTypeBoolean, TokenNameToLexeme(BoolType));
+
+    walkGlobalScope(sch, programm);
+}
+
+void FreeSemCheck(SemanticChecker* sch)
+{
+    FreeScope(sch->rootScope);
+    free(sch->errors);
 }

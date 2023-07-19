@@ -34,5 +34,25 @@ const char* TokenNameToString(TokenName n) {
     exit(1);
 }
 
+const char* TokenNameToLexeme(TokenName n) {
+    {{ range .ConstLexemes }}
+    if ({{.TokenName}} == n) {
+        return "{{.Lexeme}}";
+    }
+    {{ end }}
+
+    {{ range .VarLexemes }}
+    if ({{.TokenName}} == n) {
+        return "";
+    }
+    {{ end }}
+
+    if (TokEOF == n) {
+            return "";
+    }
+
+    exit(1);
+}
+
 
 

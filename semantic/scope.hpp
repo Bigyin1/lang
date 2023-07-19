@@ -8,4 +8,12 @@ ScopeNode* NewScopeNode();
 
 void AddNewScope(ScopeNode* prev, ScopeNode* newScope);
 
+Symbol* NewVarDef(ScopeNode* curr, Token* varTypeTok, Token* varNameTok);
+
+Symbol* NewFuncDef(ScopeNode* curr, FuncDeclNode* fdn);
+
+Type* DefineBaseType(ScopeNode* curr, BaseType bt, const char* name);
+
+// Symbol* NewType(ScopeNode* curr, Node tn); TODO
+
 #endif
