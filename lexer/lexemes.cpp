@@ -9,264 +9,264 @@ TokenName ReservedWordToToken(const char* w) {
 
      
     if (strcmp(w, "for") == 0)
-        return FOR;
+        return TOK_FOR;
      
     if (strcmp(w, "if") == 0)
-        return IF;
+        return TOK_IF;
      
     if (strcmp(w, "else") == 0)
-        return ELSE;
+        return TOK_ELSE;
      
     if (strcmp(w, "var") == 0)
-        return VAR;
+        return TOK_VAR;
      
     if (strcmp(w, "int") == 0)
-        return IntType;
+        return TOK_IntType;
      
     if (strcmp(w, "float") == 0)
-        return FloatType;
+        return TOK_FloatType;
      
     if (strcmp(w, "bool") == 0)
-        return BoolType;
+        return TOK_BoolType;
      
     if (strcmp(w, "true") == 0)
-        return TRUE;
+        return TOK_TRUE;
      
     if (strcmp(w, "false") == 0)
-        return FALSE;
+        return TOK_FALSE;
      
     if (strcmp(w, "+") == 0)
-        return PLUS;
+        return TOK_PLUS;
      
     if (strcmp(w, "-") == 0)
-        return MINUS;
+        return TOK_MINUS;
      
     if (strcmp(w, "*") == 0)
-        return MULT;
+        return TOK_MULT;
      
     if (strcmp(w, "/") == 0)
-        return DIV;
+        return TOK_DIV;
      
     if (strcmp(w, "(") == 0)
-        return LPAREN;
+        return TOK_LPAREN;
      
     if (strcmp(w, ")") == 0)
-        return RPAREN;
+        return TOK_RPAREN;
      
     if (strcmp(w, "[") == 0)
-        return LBRACKET;
+        return TOK_LBRACKET;
      
     if (strcmp(w, "]") == 0)
-        return RBRACKET;
+        return TOK_RBRACKET;
      
     if (strcmp(w, "{") == 0)
-        return LBRACE;
+        return TOK_LBRACE;
      
     if (strcmp(w, "}") == 0)
-        return RBRACE;
+        return TOK_RBRACE;
      
     if (strcmp(w, "=") == 0)
-        return ASSIGN;
+        return TOK_ASSIGN;
      
     if (strcmp(w, "==") == 0)
-        return EQ;
+        return TOK_EQ;
      
     if (strcmp(w, ">=") == 0)
-        return GE;
+        return TOK_GE;
      
     if (strcmp(w, ">") == 0)
-        return GT;
+        return TOK_GT;
      
     if (strcmp(w, "<=") == 0)
-        return LE;
+        return TOK_LE;
      
     if (strcmp(w, "<") == 0)
-        return LT;
+        return TOK_LT;
      
     if (strcmp(w, "!=") == 0)
-        return NE;
+        return TOK_NE;
      
     if (strcmp(w, "!") == 0)
-        return NOT;
+        return TOK_NOT;
      
     if (strcmp(w, "||") == 0)
-        return LOR;
+        return TOK_LOR;
      
     if (strcmp(w, "&&") == 0)
-        return LAND;
+        return TOK_LAND;
      
     if (strcmp(w, "return") == 0)
-        return RETURN;
+        return TOK_RETURN;
      
     if (strcmp(w, "break") == 0)
-        return BREAK;
+        return TOK_BREAK;
      
     if (strcmp(w, "continue") == 0)
-        return CONTINUE;
+        return TOK_CONTINUE;
      
     if (strcmp(w, "func") == 0)
-        return FUNC;
+        return TOK_FUNC;
      
     if (strcmp(w, ",") == 0)
-        return COMMA;
+        return TOK_COMMA;
     
-    return TokEOF;
+    return TOK_EOF;
 }
 
 const char* TokenNameToString(TokenName n) {
     
-    if (FOR == n) {
+    if (TOK_FOR == n) {
         return "FOR";
     }
     
-    if (IF == n) {
+    if (TOK_IF == n) {
         return "IF";
     }
     
-    if (ELSE == n) {
+    if (TOK_ELSE == n) {
         return "ELSE";
     }
     
-    if (VAR == n) {
+    if (TOK_VAR == n) {
         return "VAR";
     }
     
-    if (IntType == n) {
+    if (TOK_IntType == n) {
         return "IntType";
     }
     
-    if (FloatType == n) {
+    if (TOK_FloatType == n) {
         return "FloatType";
     }
     
-    if (BoolType == n) {
+    if (TOK_BoolType == n) {
         return "BoolType";
     }
     
-    if (TRUE == n) {
+    if (TOK_TRUE == n) {
         return "TRUE";
     }
     
-    if (FALSE == n) {
+    if (TOK_FALSE == n) {
         return "FALSE";
     }
     
-    if (PLUS == n) {
+    if (TOK_PLUS == n) {
         return "PLUS";
     }
     
-    if (MINUS == n) {
+    if (TOK_MINUS == n) {
         return "MINUS";
     }
     
-    if (MULT == n) {
+    if (TOK_MULT == n) {
         return "MULT";
     }
     
-    if (DIV == n) {
+    if (TOK_DIV == n) {
         return "DIV";
     }
     
-    if (LPAREN == n) {
+    if (TOK_LPAREN == n) {
         return "LPAREN";
     }
     
-    if (RPAREN == n) {
+    if (TOK_RPAREN == n) {
         return "RPAREN";
     }
     
-    if (LBRACKET == n) {
+    if (TOK_LBRACKET == n) {
         return "LBRACKET";
     }
     
-    if (RBRACKET == n) {
+    if (TOK_RBRACKET == n) {
         return "RBRACKET";
     }
     
-    if (LBRACE == n) {
+    if (TOK_LBRACE == n) {
         return "LBRACE";
     }
     
-    if (RBRACE == n) {
+    if (TOK_RBRACE == n) {
         return "RBRACE";
     }
     
-    if (ASSIGN == n) {
+    if (TOK_ASSIGN == n) {
         return "ASSIGN";
     }
     
-    if (EQ == n) {
+    if (TOK_EQ == n) {
         return "EQ";
     }
     
-    if (GE == n) {
+    if (TOK_GE == n) {
         return "GE";
     }
     
-    if (GT == n) {
+    if (TOK_GT == n) {
         return "GT";
     }
     
-    if (LE == n) {
+    if (TOK_LE == n) {
         return "LE";
     }
     
-    if (LT == n) {
+    if (TOK_LT == n) {
         return "LT";
     }
     
-    if (NE == n) {
+    if (TOK_NE == n) {
         return "NE";
     }
     
-    if (NOT == n) {
+    if (TOK_NOT == n) {
         return "NOT";
     }
     
-    if (LOR == n) {
+    if (TOK_LOR == n) {
         return "LOR";
     }
     
-    if (LAND == n) {
+    if (TOK_LAND == n) {
         return "LAND";
     }
     
-    if (RETURN == n) {
+    if (TOK_RETURN == n) {
         return "RETURN";
     }
     
-    if (BREAK == n) {
+    if (TOK_BREAK == n) {
         return "BREAK";
     }
     
-    if (CONTINUE == n) {
+    if (TOK_CONTINUE == n) {
         return "CONTINUE";
     }
     
-    if (FUNC == n) {
+    if (TOK_FUNC == n) {
         return "FUNC";
     }
     
-    if (COMMA == n) {
+    if (TOK_COMMA == n) {
         return "COMMA";
     }
     
 
     
-    if (Integer == n) {
+    if (TOK_Integer == n) {
         return "Integer";
     }
     
-    if (Float == n) {
+    if (TOK_Float == n) {
         return "Float";
     }
     
-    if (ID == n) {
+    if (TOK_ID == n) {
         return "ID";
     }
     
 
-    if (TokEOF == n) {
+    if (TOK_EOF == n) {
             return "EOF";
     }
 
@@ -275,158 +275,158 @@ const char* TokenNameToString(TokenName n) {
 
 const char* TokenNameToLexeme(TokenName n) {
     
-    if (FOR == n) {
+    if (TOK_FOR == n) {
         return "for";
     }
     
-    if (IF == n) {
+    if (TOK_IF == n) {
         return "if";
     }
     
-    if (ELSE == n) {
+    if (TOK_ELSE == n) {
         return "else";
     }
     
-    if (VAR == n) {
+    if (TOK_VAR == n) {
         return "var";
     }
     
-    if (IntType == n) {
+    if (TOK_IntType == n) {
         return "int";
     }
     
-    if (FloatType == n) {
+    if (TOK_FloatType == n) {
         return "float";
     }
     
-    if (BoolType == n) {
+    if (TOK_BoolType == n) {
         return "bool";
     }
     
-    if (TRUE == n) {
+    if (TOK_TRUE == n) {
         return "true";
     }
     
-    if (FALSE == n) {
+    if (TOK_FALSE == n) {
         return "false";
     }
     
-    if (PLUS == n) {
+    if (TOK_PLUS == n) {
         return "+";
     }
     
-    if (MINUS == n) {
+    if (TOK_MINUS == n) {
         return "-";
     }
     
-    if (MULT == n) {
+    if (TOK_MULT == n) {
         return "*";
     }
     
-    if (DIV == n) {
+    if (TOK_DIV == n) {
         return "/";
     }
     
-    if (LPAREN == n) {
+    if (TOK_LPAREN == n) {
         return "(";
     }
     
-    if (RPAREN == n) {
+    if (TOK_RPAREN == n) {
         return ")";
     }
     
-    if (LBRACKET == n) {
+    if (TOK_LBRACKET == n) {
         return "[";
     }
     
-    if (RBRACKET == n) {
+    if (TOK_RBRACKET == n) {
         return "]";
     }
     
-    if (LBRACE == n) {
+    if (TOK_LBRACE == n) {
         return "{";
     }
     
-    if (RBRACE == n) {
+    if (TOK_RBRACE == n) {
         return "}";
     }
     
-    if (ASSIGN == n) {
+    if (TOK_ASSIGN == n) {
         return "=";
     }
     
-    if (EQ == n) {
+    if (TOK_EQ == n) {
         return "==";
     }
     
-    if (GE == n) {
+    if (TOK_GE == n) {
         return ">=";
     }
     
-    if (GT == n) {
+    if (TOK_GT == n) {
         return ">";
     }
     
-    if (LE == n) {
+    if (TOK_LE == n) {
         return "<=";
     }
     
-    if (LT == n) {
+    if (TOK_LT == n) {
         return "<";
     }
     
-    if (NE == n) {
+    if (TOK_NE == n) {
         return "!=";
     }
     
-    if (NOT == n) {
+    if (TOK_NOT == n) {
         return "!";
     }
     
-    if (LOR == n) {
+    if (TOK_LOR == n) {
         return "||";
     }
     
-    if (LAND == n) {
+    if (TOK_LAND == n) {
         return "&&";
     }
     
-    if (RETURN == n) {
+    if (TOK_RETURN == n) {
         return "return";
     }
     
-    if (BREAK == n) {
+    if (TOK_BREAK == n) {
         return "break";
     }
     
-    if (CONTINUE == n) {
+    if (TOK_CONTINUE == n) {
         return "continue";
     }
     
-    if (FUNC == n) {
+    if (TOK_FUNC == n) {
         return "func";
     }
     
-    if (COMMA == n) {
+    if (TOK_COMMA == n) {
         return ",";
     }
     
 
     
-    if (Integer == n) {
+    if (TOK_Integer == n) {
         return "";
     }
     
-    if (Float == n) {
+    if (TOK_Float == n) {
         return "";
     }
     
-    if (ID == n) {
+    if (TOK_ID == n) {
         return "";
     }
     
 
-    if (TokEOF == n) {
+    if (TOK_EOF == n) {
             return "";
     }
 

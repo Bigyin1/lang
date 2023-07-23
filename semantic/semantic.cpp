@@ -31,16 +31,16 @@ static const Type* checkValue(SemanticChecker* sch, ScopeNode* curr, ValNode* v)
     TokenName valType = v->val->n;
     switch (valType)
     {
-        case TRUE:
-        case FALSE:
+        case TOK_TRUE:
+        case TOK_FALSE:
             return boolTypeObj;
 
-        case Integer:
+        case TOK_Integer:
             return intTypeObj;
-        case Float:
+        case TOK_Float:
             return floatTypeObj;
 
-        case ID:
+        case TOK_ID:
         {
             Symbol* sym = GetSymbolByNameFromScope(curr, v->val->StrVal);
             if (sym == NULL)
@@ -64,19 +64,19 @@ static const Type* checkUnOp(SemanticChecker* sch, ScopeNode* curr, UnOpNode* uo
 
     TokenName op = uopn->op->n;
 
-    if (op & NOT)
+    if (op & TOK_NOT)
     {
         if (areEqTypes(chType, boolTypeObj))
             AddNewErr(sch, NewUndefOpErr(uopn->op, chType));
     }
 
-    if (op & MINUS)
+    if (op & TOK_MINUS)
     {
         if (!areEqTypes(chType, intTypeObj) && !areEqTypes(chType, floatTypeObj))
             AddNewErr(sch, NewUndefOpErr(uopn->op, chType));
     }
 
-    if (op & RETURN)
+    if (op & TOK_RETURN)
     {
         const Type* currFuncRetType =
             GetSymbolByNameFromScope(curr, sch->currFunc->fName->StrVal)->type->ft.retType;
@@ -85,7 +85,7 @@ static const Type* checkUnOp(SemanticChecker* sch, ScopeNode* curr, UnOpNode* uo
             AddNewErr(sch, NewBadRetType(chType, currFuncRetType, uopn->op));
     }
 
-    if (op & (BREAK | CONTINUE))
+    if (op & (TOK_BREAK | TOK_CONTINUE))
     {
         if (sch->currCycle == NULL)
             AddNewErr(sch, NewJmpOutsideLoopErr(uopn->op));
@@ -110,7 +110,7 @@ static const Type* checkBinOp(SemanticChecker* sch, ScopeNode* curr, BinOpNode* 
 
     TokenName op = bopn->op->n;
 
-    if (op & (LAND | LOR))
+    if (op & (TOK_LAND | TOK_LOR))
     {
         if (!areEqTypes(lType, boolTypeObj))
         {
@@ -121,7 +121,8 @@ static const Type* checkBinOp(SemanticChecker* sch, ScopeNode* curr, BinOpNode* 
         return boolTypeObj;
     }
 
-    if (op & (MULT | DIV | PLUS | MINUS | EQ | GE | GT | LE | LT | NE))
+    if (op & (TOK_MULT | TOK_DIV | TOK_PLUS | TOK_MINUS | TOK_EQ | TOK_GE | TOK_GT | TOK_LE |
+              TOK_LT | TOK_NE))
     {
         if (!areEqTypes(lType, intTypeObj) && !areEqTypes(lType, floatTypeObj))
         {
@@ -129,7 +130,7 @@ static const Type* checkBinOp(SemanticChecker* sch, ScopeNode* curr, BinOpNode* 
             return NULL;
         }
 
-        if (op & (MULT | DIV | PLUS | MINUS))
+        if (op & (TOK_MULT | TOK_DIV | TOK_PLUS | TOK_MINUS))
             return lType;
 
         return boolTypeObj;
@@ -342,9 +343,10 @@ void RunSemCheck(SemanticChecker* sch, ListNode* programm)
 
     sch->rootScope = NewScopeNode();
 
-    intTypeObj   = DefineBaseType(sch->rootScope, BaseTypeInteger, TokenNameToLexeme(IntType));
-    floatTypeObj = DefineBaseType(sch->rootScope, BaseTypeFloat64, TokenNameToLexeme(FloatType));
-    boolTypeObj  = DefineBaseType(sch->rootScope, BaseTypeBoolean, TokenNameToLexeme(BoolType));
+    intTypeObj = DefineBaseType(sch->rootScope, BaseTypeInteger, TokenNameToLexeme(TOK_IntType));
+    floatTypeObj =
+        DefineBaseType(sch->rootScope, BaseTypeFloat64, TokenNameToLexeme(TOK_FloatType));
+    boolTypeObj = DefineBaseType(sch->rootScope, BaseTypeBoolean, TokenNameToLexeme(TOK_BoolType));
 
     walkGlobalScope(sch, programm);
 }

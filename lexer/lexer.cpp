@@ -26,7 +26,7 @@ void DestructLexer(Lexer* l)
 {
     for (size_t i = 0; i < l->ToksLen; i++)
     {
-        if (l->Tokens[i].n == ID)
+        if (l->Tokens[i].n == TOK_ID)
             free((char*)l->Tokens[i].StrVal);
     }
 
@@ -38,6 +38,6 @@ void Run(Lexer* l)
 {
     lexProgramm(l);
 
-    emit(l, TokEOF);
+    emit(l, TOK_EOF);
     return;
 }

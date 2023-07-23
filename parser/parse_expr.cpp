@@ -15,9 +15,9 @@ static ListNode* funcArgs(Parser* p)
     Node arg = expr(p);
     ListNodeAddChild(ln.ln, arg);
 
-    while (currTokenHasName(p, COMMA))
+    while (currTokenHasName(p, TOK_COMMA))
     {
-        eatToken(p, COMMA);
+        eatToken(p, TOK_COMMA);
         arg = expr(p);
         ListNodeAddChild(ln.ln, arg);
     }
@@ -31,15 +31,15 @@ Node funccall(Parser* p)
         return Node{};
 
     Token* fName = getCurrToken(p);
-    eatToken(p, ID);
+    eatToken(p, TOK_ID);
 
-    eatToken(p, LPAREN);
+    eatToken(p, TOK_LPAREN);
 
     ListNode* args = NULL;
-    if (!currTokenHasName(p, RPAREN))
+    if (!currTokenHasName(p, TOK_RPAREN))
         args = funcArgs(p);
 
-    eatToken(p, RPAREN);
+    eatToken(p, TOK_RPAREN);
 
     return NewFuncCallNode(fName, args);
 }
@@ -49,17 +49,17 @@ static Node factor(Parser* p)
     if (p->HasErr)
         return Node{};
 
-    if (currTokenHasName(p, MINUS | NOT))
+    if (currTokenHasName(p, TOK_MINUS | TOK_NOT))
     {
         Token* op = getCurrToken(p);
-        eatToken(p, MINUS | NOT);
+        eatToken(p, TOK_MINUS | TOK_NOT);
 
         return NewUnOpNode(factor(p), op);
     }
 
-    if (currTokenHasName(p, Integer | Float | TRUE | FALSE | ID))
+    if (currTokenHasName(p, TOK_Integer | TOK_Float | TOK_TRUE | TOK_FALSE | TOK_ID))
     {
-        if (currTokenHasName(p, ID) && peek(p) == LPAREN)
+        if (currTokenHasName(p, TOK_ID) && peek(p) == TOK_LPAREN)
             return funccall(p);
 
         Token* val = getCurrToken(p);
@@ -68,17 +68,18 @@ static Node factor(Parser* p)
         return NewValNode(val);
     }
 
-    if (!currTokenHasName(p, LPAREN))
+    if (!currTokenHasName(p, TOK_LPAREN))
     {
-        emitError(p, LPAREN | Integer | Float | TRUE | FALSE | ID | MINUS | NOT);
+        emitError(p, TOK_LPAREN | TOK_Integer | TOK_Float | TOK_TRUE | TOK_FALSE | TOK_ID |
+                         TOK_MINUS | TOK_NOT);
         return Node{};
     }
 
-    eatToken(p, LPAREN);
+    eatToken(p, TOK_LPAREN);
 
     Node exp = expr(p);
 
-    eatToken(p, RPAREN);
+    eatToken(p, TOK_RPAREN);
 
     return exp;
 }
@@ -90,7 +91,7 @@ static Node term(Parser* p)
 
     Node l = factor(p);
 
-    while (currTokenHasName(p, MULT | DIV | LAND))
+    while (currTokenHasName(p, TOK_MULT | TOK_DIV | TOK_LAND))
     {
 
         Token* op = getCurrToken(p);
@@ -113,7 +114,7 @@ static Node arithm(Parser* p)
 
     Node l = term(p);
 
-    while (currTokenHasName(p, PLUS | MINUS | LOR))
+    while (currTokenHasName(p, TOK_PLUS | TOK_MINUS | TOK_LOR))
     {
 
         Token* op = getCurrToken(p);
@@ -136,7 +137,7 @@ Node expr(Parser* p)
 
     Node l = arithm(p);
 
-    if (currTokenHasName(p, EQ | NE | GT | GE | LT | LE | NE))
+    if (currTokenHasName(p, TOK_EQ | TOK_NE | TOK_GT | TOK_GE | TOK_LT | TOK_LE | TOK_NE))
     {
         Token* op = getCurrToken(p);
         eatToken(p, op->n);

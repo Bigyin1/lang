@@ -9,25 +9,25 @@ TokenName ReservedWordToToken(const char* w) {
 
     {{ range .ConstLexemes }} 
     if (strcmp(w, "{{.Lexeme}}") == 0)
-        return {{.TokenName}};
+        return TOK_{{.TokenName}};
     {{ end }}
-    return TokEOF;
+    return TOK_EOF;
 }
 
 const char* TokenNameToString(TokenName n) {
     {{ range .ConstLexemes }}
-    if ({{.TokenName}} == n) {
+    if (TOK_{{.TokenName}} == n) {
         return "{{.TokenName}}";
     }
     {{ end }}
 
     {{ range .VarLexemes }}
-    if ({{.TokenName}} == n) {
+    if (TOK_{{.TokenName}} == n) {
         return "{{.TokenName}}";
     }
     {{ end }}
 
-    if (TokEOF == n) {
+    if (TOK_EOF == n) {
             return "EOF";
     }
 
@@ -36,18 +36,18 @@ const char* TokenNameToString(TokenName n) {
 
 const char* TokenNameToLexeme(TokenName n) {
     {{ range .ConstLexemes }}
-    if ({{.TokenName}} == n) {
+    if (TOK_{{.TokenName}} == n) {
         return "{{.Lexeme}}";
     }
     {{ end }}
 
     {{ range .VarLexemes }}
-    if ({{.TokenName}} == n) {
+    if (TOK_{{.TokenName}} == n) {
         return "";
     }
     {{ end }}
 
-    if (TokEOF == n) {
+    if (TOK_EOF == n) {
             return "";
     }
 

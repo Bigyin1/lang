@@ -59,7 +59,7 @@ Type* GetTypeByNameFromScope(ScopeNode* sc, const char* tname)
 static Type* getTypeByName(ScopeNode* curr, Token* typeNameTok)
 {
     const char* typeName = NULL;
-    if (typeNameTok->n != ID)
+    if (typeNameTok->n != TOK_ID)
     {
         typeName = TokenNameToLexeme(typeNameTok->n); // base type name
     }

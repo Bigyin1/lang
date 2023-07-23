@@ -88,18 +88,18 @@ void emit(Lexer* l, TokenName tName)
     const char* currLex = getCurrLexeme(l);
     switch (tName)
     {
-        case ID:
+        case TOK_ID:
             l->Tokens[newTokIdx].StrVal = strdup(currLex);
             break;
 
-        case Integer:
+        case TOK_Integer:
         {
             uint64_t val = 0;
             sscanf(currLex, "%lu", &val);
             l->Tokens[newTokIdx].IntVal = val;
             break;
         }
-        case Float:
+        case TOK_Float:
         {
             double val = 0;
             sscanf(currLex, "%lf", &val);
@@ -136,11 +136,11 @@ void lexNumber(Lexer* l)
     if (acceptSet(l, "."))
     {
         acceptRun(l, isdigit);
-        emit(l, Float);
+        emit(l, TOK_Float);
     }
     else
     {
-        emit(l, Integer);
+        emit(l, TOK_Integer);
     }
 }
 
@@ -152,9 +152,9 @@ void lexKeywordOrId(Lexer* l)
     TokenName   tn     = ReservedWordToToken(lexeme);
     resetCurrLexeme(l);
 
-    if (tn == TokEOF) // got ID
+    if (tn == TOK_EOF) // got ID
     {
-        emit(l, ID);
+        emit(l, TOK_ID);
         return;
     }
 
@@ -171,7 +171,7 @@ void lexNonAlphaReservedWords(Lexer* l)
         TokenName   tn     = ReservedWordToToken(lexeme);
         resetCurrLexeme(l);
 
-        if (tn == TokEOF)
+        if (tn == TOK_EOF)
         {
             backup(l);
             continue;

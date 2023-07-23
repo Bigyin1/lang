@@ -9,19 +9,19 @@ static Node varDecl(Parser* p)
     if (p->HasErr)
         return Node{};
 
-    eatToken(p, VAR);
+    eatToken(p, TOK_VAR);
 
     Token* varName = getCurrToken(p);
-    eatToken(p, ID);
+    eatToken(p, TOK_ID);
 
     Token* varType = getCurrToken(p);
-    eatToken(p, FloatType | IntType | BoolType);
+    eatToken(p, TOK_FloatType | TOK_IntType | TOK_BoolType);
 
     Node init = {};
 
-    if (currTokenHasName(p, ASSIGN))
+    if (currTokenHasName(p, TOK_ASSIGN))
     {
-        eatToken(p, ASSIGN);
+        eatToken(p, TOK_ASSIGN);
         init = expr(p);
     }
 
@@ -33,13 +33,13 @@ Node compoundStmt(Parser* p)
     if (p->HasErr)
         return Node{};
 
-    eatToken(p, LBRACE);
+    eatToken(p, TOK_LBRACE);
 
     Node ln = NewListNode(NODE_COMPOUND_STMT);
 
-    while (!currTokenHasName(p, RBRACE))
+    while (!currTokenHasName(p, TOK_RBRACE))
     {
-        if (currTokenHasName(p, VAR))
+        if (currTokenHasName(p, TOK_VAR))
             ListNodeAddChild(ln.ln, varDecl(p));
         else
             ListNodeAddChild(ln.ln, stmt(p));
@@ -48,7 +48,7 @@ Node compoundStmt(Parser* p)
             return ln;
     }
 
-    eatToken(p, RBRACE);
+    eatToken(p, TOK_RBRACE);
 
     return ln;
 }
@@ -59,10 +59,10 @@ static Node assignStmt(Parser* p)
         return Node{};
 
     Node var = NewValNode(getCurrToken(p));
-    eatToken(p, ID);
+    eatToken(p, TOK_ID);
 
     Token* assign = getCurrToken(p);
-    eatToken(p, ASSIGN);
+    eatToken(p, TOK_ASSIGN);
 
     Node val = expr(p);
 
@@ -75,17 +75,17 @@ static Node selectionStmt(Parser* p)
         return Node{};
 
     Token* ifTok = getCurrToken(p);
-    eatToken(p, IF);
+    eatToken(p, TOK_IF);
 
     Node cond = expr(p);
 
     ListNode* body = compoundStmt(p).ln;
 
     Node elseBody = {};
-    if (currTokenHasName(p, ELSE))
+    if (currTokenHasName(p, TOK_ELSE))
     {
-        eatToken(p, ELSE);
-        if (currTokenHasName(p, IF))
+        eatToken(p, TOK_ELSE);
+        if (currTokenHasName(p, TOK_IF))
             elseBody = selectionStmt(p);
         else
             elseBody = compoundStmt(p);
@@ -100,7 +100,7 @@ static Node iterationStmt(Parser* p)
         return Node{};
 
     Token* forTok = getCurrToken(p);
-    eatToken(p, FOR);
+    eatToken(p, TOK_FOR);
 
     Node cond = expr(p);
 
@@ -119,7 +119,7 @@ static Node jumpStmt(Parser* p)
 
     eatToken(p, op->n);
 
-    if (op->n == RETURN)
+    if (op->n == TOK_RETURN)
     {
         size_t currTokIdx = p->currTokenIdx;
 
@@ -139,29 +139,29 @@ Node stmt(Parser* p)
     if (p->HasErr)
         return Node{};
 
-    if (currTokenHasName(p, LBRACE))
+    if (currTokenHasName(p, TOK_LBRACE))
         return compoundStmt(p);
 
-    if (currTokenHasName(p, ID))
+    if (currTokenHasName(p, TOK_ID))
     {
         TokenName next = peek(p);
-        if (next == ASSIGN)
+        if (next == TOK_ASSIGN)
             return assignStmt(p);
 
-        if (next == LPAREN)
+        if (next == TOK_LPAREN)
             return funccall(p);
     }
 
-    if (currTokenHasName(p, IF))
+    if (currTokenHasName(p, TOK_IF))
         return selectionStmt(p);
 
-    if (currTokenHasName(p, FOR))
+    if (currTokenHasName(p, TOK_FOR))
         return iterationStmt(p);
 
-    if (currTokenHasName(p, BREAK | CONTINUE | RETURN))
+    if (currTokenHasName(p, TOK_BREAK | TOK_CONTINUE | TOK_RETURN))
         return jumpStmt(p);
 
-    emitError(p, LBRACE | ID | IF | FOR | BREAK | CONTINUE | RETURN);
+    emitError(p, TOK_LBRACE | TOK_ID | TOK_IF | TOK_FOR | TOK_BREAK | TOK_CONTINUE | TOK_RETURN);
 
     return Node{};
 }

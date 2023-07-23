@@ -6,15 +6,15 @@
 
 
 enum TokenName {
-	TokEOF = 0,
+	TOK_EOF = 0,
 
-	{{ range $i, $name := .TokNames }}{{ $name }} = 1ULL << {{ $i }},
+	{{ range $i, $name := .TokNames }}TOK_{{ $name }} = 1ULL << {{ $i }},
     {{ end }}
 };
 
 const TokenName TokenNames[] = {
 
-    {{ range $i, $name := .TokNames }}{{ $name }},
+    {{ range $i, $name := .TokNames }}TOK_{{ $name }},
     {{ end }}
 
 };

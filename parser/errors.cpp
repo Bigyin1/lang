@@ -7,15 +7,15 @@ void PrintParserError(UnexpTokenError* e, FILE* out)
 
     switch (e->tok->n)
     {
-        case ID:
+        case TOK_ID:
             fprintf(out, "%s", e->tok->StrVal);
             break;
 
-        case Integer:
+        case TOK_Integer:
             fprintf(out, "%lu", e->tok->IntVal);
             break;
 
-        case Float:
+        case TOK_Float:
             fprintf(out, "%lf", e->tok->FloatVal);
             break;
 

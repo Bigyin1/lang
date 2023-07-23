@@ -10,27 +10,27 @@
 
 static void funcParams(Parser* p, ListNode* ln)
 {
-    if (!currTokenHasName(p, ID))
+    if (!currTokenHasName(p, TOK_ID))
         return;
 
     size_t firstVarIdx = ln->chLen;
 
-    while (currTokenHasName(p, ID))
+    while (currTokenHasName(p, TOK_ID))
     {
         Token* paramName = getCurrToken(p);
         ListNodeAddChild(ln, NewFuncParamNode(paramName, NULL));
 
-        eatToken(p, ID);
+        eatToken(p, TOK_ID);
 
-        if (!currTokenHasName(p, COMMA))
+        if (!currTokenHasName(p, TOK_COMMA))
             break;
 
-        eatToken(p, COMMA);
+        eatToken(p, TOK_COMMA);
     }
 
     Token* type = getCurrToken(p);
 
-    eatToken(p, FloatType | IntType | BoolType);
+    eatToken(p, TOK_FloatType | TOK_IntType | TOK_BoolType);
 
     for (size_t i = firstVarIdx; i < ln->chLen; i++)
         ln->children[i].fpn->typeName = type;
@@ -43,9 +43,9 @@ static ListNode* funcParamsList(Parser* p)
 
     funcParams(p, ln.ln);
 
-    while (currTokenHasName(p, COMMA))
+    while (currTokenHasName(p, TOK_COMMA))
     {
-        eatToken(p, COMMA);
+        eatToken(p, TOK_COMMA);
         funcParams(p, ln.ln);
         if (p->HasErr)
             return ln.ln;
@@ -56,22 +56,22 @@ static ListNode* funcParamsList(Parser* p)
 
 static Node funcDecl(Parser* p)
 {
-    eatToken(p, FUNC);
+    eatToken(p, TOK_FUNC);
 
     Token* fName = getCurrToken(p);
-    eatToken(p, ID);
+    eatToken(p, TOK_ID);
 
-    eatToken(p, LPAREN);
+    eatToken(p, TOK_LPAREN);
 
     ListNode* params = funcParamsList(p);
 
-    eatToken(p, RPAREN);
+    eatToken(p, TOK_RPAREN);
 
     Token* retType = NULL;
-    if (currTokenHasName(p, FloatType | IntType | BoolType))
+    if (currTokenHasName(p, TOK_FloatType | TOK_IntType | TOK_BoolType))
     {
         retType = getCurrToken(p);
-        eatToken(p, FloatType | IntType | BoolType);
+        eatToken(p, TOK_FloatType | TOK_IntType | TOK_BoolType);
     }
 
     ListNode* body = compoundStmt(p).ln;
@@ -83,7 +83,7 @@ Node programm(Parser* p)
 {
     Node ln = NewListNode(NODE_PROGRAMM);
 
-    while (currTokenHasName(p, FUNC))
+    while (currTokenHasName(p, TOK_FUNC))
     {
         ListNodeAddChild(ln.ln, funcDecl(p));
     }

@@ -42,10 +42,10 @@ void eatToken(Parser* p, TokenNamesSet exp)
 TokenName peek(Parser* p)
 {
     if (p->HasErr)
-        return TokEOF;
+        return TOK_EOF;
 
-    if (p->tokens[p->currTokenIdx].n == TokEOF)
-        return TokEOF;
+    if (p->tokens[p->currTokenIdx].n == TOK_EOF)
+        return TOK_EOF;
 
     return p->tokens[p->currTokenIdx + 1].n;
 }

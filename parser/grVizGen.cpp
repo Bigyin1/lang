@@ -77,15 +77,15 @@ static void walkValue(ValNode* vn, FILE* out)
 
     switch (vn->val->n)
     {
-        case ID:
+        case TOK_ID:
             fprintf(out, "%s>\n]", vn->val->StrVal);
             break;
 
-        case Integer:
+        case TOK_Integer:
             fprintf(out, "%lu>\n]", vn->val->IntVal);
             break;
 
-        case Float:
+        case TOK_Float:
             fprintf(out, "%lf>\n]", vn->val->FloatVal);
             break;
 

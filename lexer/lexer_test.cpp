@@ -11,12 +11,17 @@ const char* testData = "int a\n"
 
 Token expToks[] = {
 
-    {.n = IntType, .Row = 1, .Col = 1},   {.n = ID, .StrVal = "a", .Row = 1, .Col = 5},
-    {.n = FloatType, .Row = 2, .Col = 1}, {.n = ID, .StrVal = "b", .Row = 2, .Col = 7},
-    {.n = ASSIGN, .Row = 2, .Col = 9},    {.n = Float, .FloatVal = 3.14, .Row = 2, .Col = 11},
-    {.n = FOR, .Row = 3, .Col = 1},       {.n = ID, .StrVal = "a", .Row = 3, .Col = 7},
-    {.n = GE, .Row = 3, .Col = 8},        {.n = ID, .StrVal = "b", .Row = 3, .Col = 11},
-    {.n = TokEOF, .Row = 3, .Col = 12},
+    {.n = TOK_IntType, .Row = 1, .Col = 1},
+    {.n = TOK_ID, .StrVal = "a", .Row = 1, .Col = 5},
+    {.n = TOK_FloatType, .Row = 2, .Col = 1},
+    {.n = TOK_ID, .StrVal = "b", .Row = 2, .Col = 7},
+    {.n = TOK_ASSIGN, .Row = 2, .Col = 9},
+    {.n = TOK_Float, .FloatVal = 3.14, .Row = 2, .Col = 11},
+    {.n = TOK_FOR, .Row = 3, .Col = 1},
+    {.n = TOK_ID, .StrVal = "a", .Row = 3, .Col = 7},
+    {.n = TOK_GE, .Row = 3, .Col = 8},
+    {.n = TOK_ID, .StrVal = "b", .Row = 3, .Col = 11},
+    {.n = TOK_EOF, .Row = 3, .Col = 12},
 };
 
 int main()
@@ -51,7 +56,7 @@ int main()
             return 1;
         }
 
-        if (l.Tokens[i].n == ID)
+        if (l.Tokens[i].n == TOK_ID)
         {
             if (strcmp(l.Tokens[i].StrVal, expToks[i].StrVal) != 0)
             {
@@ -61,7 +66,7 @@ int main()
             }
         }
 
-        if (l.Tokens[i].n == Float)
+        if (l.Tokens[i].n == TOK_Float)
         {
             if (l.Tokens[i].IntVal != expToks[i].IntVal)
             {
@@ -70,7 +75,7 @@ int main()
                 return 1;
             }
         }
-        if (l.Tokens[i].n == Integer)
+        if (l.Tokens[i].n == TOK_Integer)
         {
             if (l.Tokens[i].IntVal != expToks[i].IntVal)
             {
