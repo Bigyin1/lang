@@ -11,8 +11,9 @@ enum TypeClass
     // TypeClassStruct,  TODO
 };
 
-enum BaseType
+enum BaseType // TODO: maybe add void base type ?
 {
+    BaseTypeEmpty = 0,
     BaseTypeInteger,
     BaseTypeFloat64,
     BaseTypeBoolean,

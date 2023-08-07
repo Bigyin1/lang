@@ -17,6 +17,8 @@ struct ScopeNode
     size_t currChild;
 };
 
+ScopeNode* ScopeGetCurrChild(ScopeNode* sc);
+
 Symbol* GetSymbolByNameFromScope(ScopeNode* sc, const char* name);
 
 Type* GetTypeByNameFromScope(ScopeNode* sc, const char* tname);

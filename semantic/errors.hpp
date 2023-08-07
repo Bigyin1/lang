@@ -13,11 +13,11 @@ SemanticError NewUndefOpErr(Token* op, const Type* t);
 
 SemanticError NewUncallableSymbErr(Symbol* symbol);
 
-SemanticError NewBadFuncCallNEArgs(Symbol* funcSymb, size_t argsSz);
+SemanticError NewBadFuncCallNEArgs(Symbol* funcSymb, Token* fCall, size_t argsSz);
 
 SemanticError NewBadRetType(const Type* ret, const Type* wanted, Token* retTok);
 
-SemanticError NewFuncArgMismatch(Symbol* funcSymb, const Type* argT, size_t argPos);
+SemanticError NewFuncArgMismatch(Symbol* funcSymb, Token* fCall, const Type* argT, size_t argPos);
 
 SemanticError NewJmpOutsideLoopErr(Token* jmp);
 

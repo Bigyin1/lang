@@ -10,7 +10,7 @@ target_link_libraries(semantic
 
 target_include_directories(semantic PUBLIC includes PRIVATE .)
 
-add_executable(semanticTest semantic semantic_test.cpp)
+add_executable(semanticTest semantic_test.cpp)
 
 target_link_libraries(semanticTest PRIVATE
     semantic parser lexer project_options project_warnings)

@@ -76,7 +76,7 @@ static void PrintError(SemUncallSymbErr* err, FILE* out)
             err->symb->tok->Col);
 }
 
-SemanticError NewBadFuncCallNEArgs(Symbol* funcSymb, size_t argsSz)
+SemanticError NewBadFuncCallNEArgs(Symbol* funcSymb, Token* fCall, size_t argsSz)
 {
     return SemanticError{
         .type = SEM_ERR_FUNC_CALL_NE_ARGS,
@@ -84,6 +84,7 @@ SemanticError NewBadFuncCallNEArgs(Symbol* funcSymb, size_t argsSz)
             SemFuncInvArgsCount{
                 .func   = funcSymb,
                 .argsSz = argsSz,
+                .fCall  = fCall,
             },
     };
 }
@@ -91,10 +92,10 @@ SemanticError NewBadFuncCallNEArgs(Symbol* funcSymb, size_t argsSz)
 static void PrintError(SemFuncInvArgsCount* err, FILE* out)
 {
     fprintf(out, "function \"%s\" call has %zu arguments, expected %zu; %u, %u\n", err->func->name,
-            err->argsSz, err->func->type->ft.paramsSz, err->func->tok->Row, err->func->tok->Col);
+            err->argsSz, err->func->type->ft.paramsSz, err->fCall->Row, err->fCall->Col);
 }
 
-SemanticError NewFuncArgMismatch(Symbol* funcSymb, const Type* argT, size_t argPos)
+SemanticError NewFuncArgMismatch(Symbol* funcSymb, Token* fCall, const Type* argT, size_t argPos)
 {
     return SemanticError{
         .type = SEM_ERR_FUNC_CALL_ARG_MISMATCH,
@@ -103,6 +104,7 @@ SemanticError NewFuncArgMismatch(Symbol* funcSymb, const Type* argT, size_t argP
                 .funcSymbol = funcSymb,
                 .argType    = argT,
                 .argIdx     = argPos,
+                .fCall      = fCall,
             },
     };
 }
@@ -113,8 +115,8 @@ static void PrintError(SemFuncArgMismatch* err, FILE* out)
             "function \"%s\" call has argument №%zu of type \"%s\", expected type: \"%s\"; "
             "%u, %u\n",
             err->funcSymbol->name, err->argIdx + 1, err->argType->name,
-            err->funcSymbol->type->ft.paramTypes[err->argIdx]->name, err->funcSymbol->tok->Row,
-            err->funcSymbol->tok->Col);
+            err->funcSymbol->type->ft.paramTypes[err->argIdx]->name, err->fCall->Row,
+            err->fCall->Col);
 }
 
 SemanticError NewBadRetType(const Type* ret, const Type* wanted, Token* retTok)

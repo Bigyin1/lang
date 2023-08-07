@@ -49,6 +49,7 @@ struct SemFuncInvArgsCount
 {
     Symbol* func;
     size_t  argsSz;
+    Token*  fCall;
 };
 
 struct SemFuncArgMismatch
@@ -56,6 +57,7 @@ struct SemFuncArgMismatch
     Symbol*     funcSymbol;
     const Type* argType;
     size_t      argIdx;
+    Token*      fCall;
 };
 
 struct SemBadRetType

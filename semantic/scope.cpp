@@ -11,6 +11,8 @@ ScopeNode* NewScopeNode()
     return n;
 }
 
+ScopeNode* ScopeGetCurrChild(ScopeNode* sc) { return sc->children[sc->currChild++]; }
+
 void AddNewScope(ScopeNode* prev, ScopeNode* newScope)
 {
     if (newScope == NULL)
@@ -58,6 +60,7 @@ Type* GetTypeByNameFromScope(ScopeNode* sc, const char* tname)
 
 static Type* getTypeByName(ScopeNode* curr, Token* typeNameTok)
 {
+
     const char* typeName = NULL;
     if (typeNameTok->n != TOK_ID)
     {
@@ -116,7 +119,7 @@ static Type* buildFuncType(ScopeNode* curr, FuncDeclNode* fdn)
         Type* paramT = getTypeByName(curr, fpn->typeName);
         if (paramT == NULL)
         {
-            printf("unreachable for now"); // TODO
+            printf("unreachable for now"); // TODO : complex types
             free(t);
             return NULL;
         }
@@ -125,14 +128,24 @@ static Type* buildFuncType(ScopeNode* curr, FuncDeclNode* fdn)
         fncType->paramsSz++;
     }
 
-    Type* retT = getTypeByName(curr, fdn->retTypeName);
-    if (retT == NULL)
+    if (fdn->retTypeName == NULL)
     {
-        printf("unreachable for now"); // TODO
-        free(t);
-        return NULL;
+        static const Type emptyTypeObj =
+            Type{.bt = BaseTypeEmpty, .name = "empty"}; // used only here
+
+        fncType->retType = &emptyTypeObj; // no ret type(void)
     }
-    fncType->retType = retT;
+    else
+    {
+        Type* retT = getTypeByName(curr, fdn->retTypeName);
+        if (retT == NULL)
+        {
+            printf("unreachable for now"); /// TODO : complex types
+            free(t);
+            return NULL;
+        }
+        fncType->retType = retT;
+    }
 
     return t;
 }

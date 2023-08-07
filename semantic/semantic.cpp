@@ -59,7 +59,7 @@ static const Type* checkValue(SemanticChecker* sch, ScopeNode* curr, ValNode* v)
 static const Type* checkUnOp(SemanticChecker* sch, ScopeNode* curr, UnOpNode* uopn)
 {
     const Type* chType = checkSimpleStmt(sch, curr, uopn->child);
-    if (uopn->child.hdr.type != NODE_EMPTY && chType == NULL)
+    if (chType == NULL)
         return NULL;
 
     TokenName op = uopn->op->n;
@@ -68,12 +68,16 @@ static const Type* checkUnOp(SemanticChecker* sch, ScopeNode* curr, UnOpNode* uo
     {
         if (areEqTypes(chType, boolTypeObj))
             AddNewErr(sch, NewUndefOpErr(uopn->op, chType));
+
+        return chType;
     }
 
     if (op & TOK_MINUS)
     {
         if (!areEqTypes(chType, intTypeObj) && !areEqTypes(chType, floatTypeObj))
             AddNewErr(sch, NewUndefOpErr(uopn->op, chType));
+
+        return chType;
     }
 
     if (op & TOK_RETURN)
@@ -83,12 +87,16 @@ static const Type* checkUnOp(SemanticChecker* sch, ScopeNode* curr, UnOpNode* uo
 
         if (!areEqTypes(chType, currFuncRetType))
             AddNewErr(sch, NewBadRetType(chType, currFuncRetType, uopn->op));
+
+        return NULL;
     }
 
     if (op & (TOK_BREAK | TOK_CONTINUE))
     {
         if (sch->currCycle == NULL)
             AddNewErr(sch, NewJmpOutsideLoopErr(uopn->op));
+
+        return NULL;
     }
 
     return NULL;
@@ -110,6 +118,11 @@ static const Type* checkBinOp(SemanticChecker* sch, ScopeNode* curr, BinOpNode* 
 
     TokenName op = bopn->op->n;
 
+    if (op & TOK_ASSIGN)
+    {
+        return NULL;
+    }
+
     if (op & (TOK_LAND | TOK_LOR))
     {
         if (!areEqTypes(lType, boolTypeObj))
@@ -121,8 +134,7 @@ static const Type* checkBinOp(SemanticChecker* sch, ScopeNode* curr, BinOpNode* 
         return boolTypeObj;
     }
 
-    if (op & (TOK_MULT | TOK_DIV | TOK_PLUS | TOK_MINUS | TOK_EQ | TOK_GE | TOK_GT | TOK_LE |
-              TOK_LT | TOK_NE))
+    if (op & (TOK_MULT | TOK_DIV | TOK_PLUS | TOK_MINUS | TOK_GE | TOK_GT | TOK_LE | TOK_LT))
     {
         if (!areEqTypes(lType, intTypeObj) && !areEqTypes(lType, floatTypeObj))
         {
@@ -133,6 +145,11 @@ static const Type* checkBinOp(SemanticChecker* sch, ScopeNode* curr, BinOpNode* 
         if (op & (TOK_MULT | TOK_DIV | TOK_PLUS | TOK_MINUS))
             return lType;
 
+        return boolTypeObj;
+    }
+
+    if (op & (TOK_EQ | TOK_NE))
+    {
         return boolTypeObj;
     }
 
@@ -147,7 +164,10 @@ static void checkVarDecl(SemanticChecker* sch, ScopeNode* curr, VarDeclNode* vdn
         const Type* initType = checkSimpleStmt(sch, curr, vdn->initVal);
         const Type* varType  = GetTypeByNameFromScope(curr, TokenNameToLexeme(vdn->typeName->n));
 
-        if (!areEqTypes(initType, varType))
+        if (varType == NULL)
+            return;
+
+        if (initType && !areEqTypes(initType, varType))
             AddNewErr(sch, NewTypesMismatchErr(varType, initType, vdn->varName));
     }
 
@@ -179,7 +199,7 @@ static const Type* checkFuncCall(SemanticChecker* sch, ScopeNode* curr, FuncCall
 
     if (args->chLen != funcSymb->type->ft.paramsSz)
     {
-        AddNewErr(sch, NewBadFuncCallNEArgs(funcSymb, args->chLen));
+        AddNewErr(sch, NewBadFuncCallNEArgs(funcSymb, fcn->fName, args->chLen));
         return ft.retType;
     }
 
@@ -192,7 +212,7 @@ static const Type* checkFuncCall(SemanticChecker* sch, ScopeNode* curr, FuncCall
             continue;
 
         if (!areEqTypes(currArgType, currParamType))
-            AddNewErr(sch, NewFuncArgMismatch(funcSymb, currArgType, i));
+            AddNewErr(sch, NewFuncArgMismatch(funcSymb, fcn->fName, currArgType, i));
     }
 
     return ft.retType;
@@ -205,15 +225,22 @@ static void walkBlock(SemanticChecker* sch, ScopeNode* curr, ListNode* ln)
     {
         Node next = ln->children[i];
 
-        if (next.hdr.type == NODE_VAR_DECL)
-        {
-            checkVarDecl(sch, curr, next.vdn);
-            continue;
-        }
-        if (checkSimpleStmt(sch, curr, next) != NULL)
-            continue;
+        NodeType nt = next.hdr.type;
 
-        walkInnerScope(sch, curr, next);
+        if (nt == NODE_VAR_DECL)
+            checkVarDecl(sch, curr, next.vdn);
+
+        else if (nt == NODE_FUNCTION_CALL)
+            checkFuncCall(sch, curr, next.fcn);
+
+        else if (nt == NODE_BINOP)
+            checkBinOp(sch, curr, next.bopn);
+
+        else if (nt == NODE_UNOP)
+            checkUnOp(sch, curr, next.uopn);
+
+        else
+            walkInnerScope(sch, curr, next);
     }
 }
 
@@ -221,7 +248,8 @@ static void walkIfStmt(SemanticChecker* sch, ScopeNode* curr, IfStmtNode* ifstn)
 {
 
     const Type* condType = checkSimpleStmt(sch, curr, ifstn->cond);
-    if (!areEqTypes(condType, boolTypeObj))
+
+    if (condType != NULL && !areEqTypes(condType, boolTypeObj))
         AddNewErr(sch, NewBadCondTypeErr(ifstn->ifTok, condType));
 
     walkBlock(sch, curr, ifstn->body);
@@ -232,7 +260,7 @@ static void walkForStmt(SemanticChecker* sch, ScopeNode* curr, ForStmtNode* fors
 {
 
     const Type* condType = checkSimpleStmt(sch, curr, forstn->cond);
-    if (!areEqTypes(condType, boolTypeObj))
+    if (condType != NULL && !areEqTypes(condType, boolTypeObj))
         AddNewErr(sch, NewBadCondTypeErr(forstn->forTok, condType));
 
     walkBlock(sch, curr, forstn->body);
@@ -324,9 +352,9 @@ static void walkGlobalScope(SemanticChecker* sch, ListNode* programm)
     {
         FuncDeclNode* currFunc = programm->children[i].fdn;
 
-        Symbol* def = NewFuncDef(sch->rootScope, currFunc);
-        if (def != NULL)
-            AddNewErr(sch, NewSymbRedefErr(currFunc->fName, def));
+        Symbol* redef = NewFuncDef(sch->rootScope, currFunc);
+        if (redef != NULL)
+            AddNewErr(sch, NewSymbRedefErr(currFunc->fName, redef));
     }
 
     for (size_t i = 0; i < programm->chLen; i++)
