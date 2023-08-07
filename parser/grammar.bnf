@@ -37,11 +37,15 @@ jump_stmt :  BREAK
            | CONTINUE
            | RETURN (expr)? 
 
-expr : arithm (relop arithm)?
+expr : lorarg (LOR lorarg)*
 
-arithm : term ((PLUS | MINUS | LOR) term)*
+lorarg : landarg (LAND landarg)*
 
-term : factor ((MULT | DIV | LAND) factor)*
+landarg : arithm (relop arithm)?
+
+arithm : term ((PLUS | MINUS) term)*
+
+term : factor ((MULT | DIV) factor)*
 
 factor :  MINUS factor
         | NOT factor

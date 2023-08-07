@@ -139,6 +139,8 @@ Node NewNodeWithType(void* n, NodeType t)
 
 static void freeListNode(ListNode* ln)
 {
+    if (ln == NULL)
+        return;
 
     for (size_t i = 0; i < ln->chLen; i++)
         FreeNode(ln->children[i]);
@@ -150,6 +152,8 @@ static void freeListNode(ListNode* ln)
 
 static void freeBinOpNode(BinOpNode* bopn)
 {
+    if (bopn == NULL)
+        return;
 
     FreeNode(bopn->left);
     FreeNode(bopn->right);
@@ -159,6 +163,8 @@ static void freeBinOpNode(BinOpNode* bopn)
 
 static void freeUnOpNode(UnOpNode* uopn)
 {
+    if (uopn == NULL)
+        return;
 
     FreeNode(uopn->child);
 
@@ -169,6 +175,8 @@ static void freeValNode(ValNode* valn) { free(valn); }
 
 static void freeVarDeclNode(VarDeclNode* vdn)
 {
+    if (vdn == NULL)
+        return;
 
     FreeNode(vdn->initVal);
 
@@ -177,6 +185,8 @@ static void freeVarDeclNode(VarDeclNode* vdn)
 
 static void freeIfStmtNode(IfStmtNode* ifstn)
 {
+    if (ifstn == NULL)
+        return;
 
     FreeNode(ifstn->cond);
     freeListNode(ifstn->body);
@@ -187,6 +197,9 @@ static void freeIfStmtNode(IfStmtNode* ifstn)
 
 static void freeForStmtNode(ForStmtNode* fstn)
 {
+    if (fstn == NULL)
+        return;
+
     FreeNode(fstn->cond);
     freeListNode(fstn->body);
 
@@ -195,6 +208,8 @@ static void freeForStmtNode(ForStmtNode* fstn)
 
 static void freeFuncDeclNode(FuncDeclNode* fdn)
 {
+    if (fdn == NULL)
+        return;
 
     freeListNode(fdn->params);
     freeListNode(fdn->body);
@@ -205,6 +220,8 @@ static void freeFuncParamNode(FuncParamNode* fpn) { free(fpn); }
 
 static void freeFuncCallNode(FuncCallNode* fcn)
 {
+    if (fcn == NULL)
+        return;
 
     freeListNode(fcn->args);
     free(fcn);

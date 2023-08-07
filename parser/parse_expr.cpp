@@ -12,6 +12,9 @@ static ListNode* funcArgs(Parser* p)
 
     Node ln = NewListNode(NODE_ARGS_LIST);
 
+    if (currTokenHasName(p, TOK_RPAREN))
+        return ln.ln;
+
     Node arg = expr(p);
     ListNodeAddChild(ln.ln, arg);
 
@@ -36,8 +39,8 @@ Node funccall(Parser* p)
     eatToken(p, TOK_LPAREN);
 
     ListNode* args = NULL;
-    if (!currTokenHasName(p, TOK_RPAREN))
-        args = funcArgs(p);
+
+    args = funcArgs(p);
 
     eatToken(p, TOK_RPAREN);
 
@@ -91,7 +94,7 @@ static Node term(Parser* p)
 
     Node l = factor(p);
 
-    while (currTokenHasName(p, TOK_MULT | TOK_DIV | TOK_LAND))
+    while (currTokenHasName(p, TOK_MULT | TOK_DIV))
     {
 
         Token* op = getCurrToken(p);
@@ -114,7 +117,7 @@ static Node arithm(Parser* p)
 
     Node l = term(p);
 
-    while (currTokenHasName(p, TOK_PLUS | TOK_MINUS | TOK_LOR))
+    while (currTokenHasName(p, TOK_PLUS | TOK_MINUS))
     {
 
         Token* op = getCurrToken(p);
@@ -130,7 +133,7 @@ static Node arithm(Parser* p)
     return l;
 }
 
-Node expr(Parser* p)
+static Node landarg(Parser* p)
 {
     if (p->HasErr)
         return Node{};
@@ -145,6 +148,50 @@ Node expr(Parser* p)
         Node r = arithm(p);
 
         return NewBinOpNode(l, r, op);
+    }
+
+    return l;
+}
+
+static Node lorarg(Parser* p)
+{
+    if (p->HasErr)
+        return Node{};
+
+    Node l = landarg(p);
+
+    while (currTokenHasName(p, TOK_LAND))
+    {
+        Token* op = getCurrToken(p);
+        eatToken(p, op->n);
+
+        Node r = landarg(p);
+
+        l = NewBinOpNode(l, r, op);
+        if (p->HasErr)
+            return l;
+    }
+
+    return l;
+}
+
+Node expr(Parser* p)
+{
+    if (p->HasErr)
+        return Node{};
+
+    Node l = lorarg(p);
+
+    while (currTokenHasName(p, TOK_LOR))
+    {
+        Token* op = getCurrToken(p);
+        eatToken(p, op->n);
+
+        Node r = lorarg(p);
+
+        l = NewBinOpNode(l, r, op);
+        if (p->HasErr)
+            return l;
     }
 
     return l;
