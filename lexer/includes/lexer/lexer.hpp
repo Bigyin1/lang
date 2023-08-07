@@ -19,7 +19,7 @@ struct Token
     {
         const char* StrVal;
         double      FloatVal;
-        uint64_t    IntVal;
+        int64_t     IntVal;
     };
 
     unsigned Row;
