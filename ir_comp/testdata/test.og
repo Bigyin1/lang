@@ -21,13 +21,15 @@ func fn3(a float)  {
 
 func main(aa, b int , cd float, j float, dog bool) int {
 
+    var cfalse bool
+
     fn(true && false || dog )
     var c int = 1
     var a int = fn2(1)
 
     var cc bool = true
 
-    fn3(3.14)
+    var vv float = !fn3(3.14)
 
     for  false {
         {

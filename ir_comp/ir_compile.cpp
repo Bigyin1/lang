@@ -253,6 +253,9 @@ std::unique_ptr<IR::InstrArg> IRCompiler::walkSimpleStmt(const Node n, IR::RegPt
                 IR::ThreeAddrInstr::Opcode::STORE, std::make_unique<IR::ImmArg>(true), res);
             this->addInstrToCurrBlock(std::move(lastInstrPtr));
 
+            auto brInstr = std::make_unique<IR::BranchInstr>(blockFalse);
+            this->addInstrToCurrBlock(std::move(brInstr));
+
             this->addNewBlockWithName(blockFalse);
 
             return std::make_unique<IR::RegArg>(res);
@@ -304,14 +307,42 @@ void IRCompiler::walkVarDecl(const VarDeclNode* vdn)
     this->AddVar(varSymb, varReg);
 
     BinOpNode assign = {0};
-    ValNode   val    = {0};
+    ValNode   varVal = {0};
 
-    val.val = vdn->varName;
+    varVal.val = vdn->varName;
 
-    Token at     = {.n = TOK_ASSIGN};
-    assign.op    = &at;
-    assign.left  = Node{.vn = &val};
-    assign.right = vdn->initVal;
+    Token at    = {.n = TOK_ASSIGN};
+    assign.op   = &at;
+    assign.left = Node{.vn = &varVal};
+
+    Token   initValTok  = {};
+    ValNode initVal     = {};
+    Node    initValNode = {};
+    if (vdn->initVal.hdr.type != NODE_EMPTY)
+        assign.right = vdn->initVal;
+    else
+    {
+        initValNode.hdr.type = NODE_VAL;
+        initValNode.vn       = &initVal;
+        initVal.val          = &initValTok;
+
+        if (varSymb->type->bt == BaseTypeBoolean)
+        {
+            initValTok.n = TOK_FALSE;
+        }
+        else if (varSymb->type->bt == BaseTypeInteger)
+        {
+            initValTok.n      = TOK_Integer;
+            initValTok.IntVal = 0;
+        }
+        else if (varSymb->type->bt == BaseTypeFloat64)
+        {
+            initValTok.n        = TOK_Float;
+            initValTok.FloatVal = 0.0;
+        }
+
+        assign.right = initValNode;
+    }
 
     walkAssignNode(&assign);
 }

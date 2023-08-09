@@ -66,7 +66,7 @@ static const Type* checkUnOp(SemanticChecker* sch, ScopeNode* curr, UnOpNode* uo
 
     if (op & TOK_NOT)
     {
-        if (areEqTypes(chType, boolTypeObj))
+        if (!areEqTypes(chType, boolTypeObj))
             AddNewErr(sch, NewUndefOpErr(uopn->op, chType));
 
         return chType;
