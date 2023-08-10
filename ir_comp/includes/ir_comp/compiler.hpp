@@ -22,7 +22,7 @@ class IRCompiler
 
 public:
     IRCompiler(Node nr, ScopeNode* rs) : astRoot(nr), rootScope(rs) {}
-    void RunIRCompiler();
+    void RunAstToIRCompiler();
 
     void Print(std::ostream& out) const
     {
@@ -74,7 +74,7 @@ private:
         if (t != IR::DataType::Void)
             rName = std::to_string(this->GetNextID());
 
-        return std::make_shared<const IR::Register>(rName, t);
+        return std::make_shared<IR::Register>(rName, t);
     }
 
     void addNewBlockWithName(IR::BasicBlockName n)
@@ -96,15 +96,9 @@ private:
 
     void prevCtx() { this->ctxStack.pop(); }
 
-    void AddVar(const Symbol* varSymb, std::shared_ptr<const IR::Register> regP)
-    {
-        this->var2reg[varSymb] = regP;
-    }
+    void AddVar(const Symbol* varSymb, IR::RegPtr regP) { this->var2reg[varSymb] = regP; }
 
-    std::shared_ptr<const IR::Register> GetRegForSymb(const Symbol* varSymb)
-    {
-        return this->var2reg[varSymb];
-    }
+    IR::RegPtr GetRegForSymb(const Symbol* varSymb) { return this->var2reg[varSymb]; }
 
     Node       astRoot;
     ScopeNode* rootScope;
@@ -121,5 +115,5 @@ private:
     IR::Function*   currFunc;
     IR::BasicBlock* currBBlock;
 
-    std::map<const Symbol*, std::shared_ptr<const IR::Register>> var2reg;
+    std::map<const Symbol*, IR::RegPtr> var2reg;
 };

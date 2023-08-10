@@ -29,7 +29,7 @@ func main(aa, b int , cd float, j float, dog bool) int {
 
     var cc bool = true
 
-    var vv float = !fn3(3.14)
+    var vv float
 
     for  false {
         {

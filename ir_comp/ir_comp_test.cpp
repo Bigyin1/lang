@@ -38,23 +38,16 @@ char* readFile(FILE* f)
 
 int main(int argc, char** argv)
 {
-
     if (argc != 2)
         return EXIT_FAILURE;
 
     FILE* in = fopen(argv[1], "r");
     if (in == NULL)
-    {
-        perror("semanticTest");
         return EXIT_FAILURE;
-    }
 
     char* input = readFile(in);
     if (input == NULL)
-    {
-        perror("semanticTest");
         return EXIT_FAILURE;
-    }
 
     Lexer l = NewLexer(input);
 
@@ -63,7 +56,7 @@ int main(int argc, char** argv)
     {
         printf("failed: ");
         Error(&l.Err, stdout);
-        return 1;
+        return EXIT_FAILURE;
     }
     free(input);
 
@@ -73,9 +66,6 @@ int main(int argc, char** argv)
     if (p.HasErr)
     {
         PrintParserError(&p.Err, stdout);
-        FreeNode(p.prog);
-        DestructLexer(&l);
-
         return EXIT_FAILURE;
     }
 
@@ -83,14 +73,20 @@ int main(int argc, char** argv)
 
     RunSemCheck(&ch, p.prog.ln);
 
-    for (size_t i = 0; i < ch.errsSz; i++)
-        PrintError(&ch.errors[i], stdout);
+    if (ch.errsSz != 0)
+    {
+        for (size_t i = 0; i < ch.errsSz; i++)
+            PrintError(&ch.errors[i], stdout);
+
+        return EXIT_FAILURE;
+    }
 
     IRCompiler comp(p.prog, ch.rootScope);
 
-    comp.RunIRCompiler();
+    comp.RunAstToIRCompiler();
 
     comp.Print(std::cout);
+
     FreeSemCheck(&ch);
     FreeNode(p.prog);
     DestructLexer(&l);

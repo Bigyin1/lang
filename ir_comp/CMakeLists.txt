@@ -1,5 +1,7 @@
 add_library(ir_comp
     ir_compile.cpp
+    print.cpp
+    liveness.cpp
 )
 
 target_link_libraries(ir_comp

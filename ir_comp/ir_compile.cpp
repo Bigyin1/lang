@@ -301,8 +301,8 @@ void IRCompiler::walkVarDecl(const VarDeclNode* vdn)
 {
     Symbol* varSymb = GetSymbolByNameFromScope(this->GetCurrScope(), vdn->varName->StrVal);
 
-    auto varReg = std::make_shared<const IR::Register>(std::to_string(this->GetNextID()),
-                                                       langTypeToIRType(varSymb->type));
+    auto varReg = std::make_shared<IR::Register>(std::to_string(this->GetNextID()),
+                                                 langTypeToIRType(varSymb->type));
 
     this->AddVar(varSymb, varReg);
 
@@ -545,7 +545,7 @@ void IRCompiler::walkRoot()
     }
 }
 
-void IRCompiler::RunIRCompiler()
+void IRCompiler::RunAstToIRCompiler()
 {
     this->ctxStack.push(WalkerCtx(this->rootScope));
     this->walkRoot();

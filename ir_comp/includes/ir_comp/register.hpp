@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "ir_comp/defs.hpp"
 #include "ir_comp/types.hpp"
 
 namespace IR
@@ -18,12 +19,12 @@ struct Register
 {
     Register(RegName name, DataType type) : name(name), type(type) {}
 
-    RegName name;
+    const RegName name;
 
-    DataType type;
+    const DataType type;
 
     std::string str() const { return "%" + name; }
 };
 
-typedef std::shared_ptr<const IR::Register> RegPtr;
+typedef std::shared_ptr<IR::Register> RegPtr;
 } // namespace IR
