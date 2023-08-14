@@ -46,6 +46,57 @@ std::string IR::ImmArg::str() const
     return "";
 }
 
+std::string IR::ThreeAddrInstr::opToStr() const
+{
+
+    switch (this->op)
+    {
+        case Opcode::BAD:
+            return "bad";
+
+        case Opcode::SUB:
+            return "sub";
+
+        case Opcode::ADD:
+            return "add";
+
+        case Opcode::MUL:
+            return "mul";
+
+        case Opcode::DIV:
+            return "div";
+
+        case Opcode::NEQ:
+            return "neq";
+
+        case Opcode::EQ:
+            return "equ";
+
+        case Opcode::GT:
+            return "gt";
+
+        case Opcode::GE:
+            return "ge";
+
+        case Opcode::LT:
+            return "lt";
+
+        case Opcode::LE:
+            return "le";
+
+        case Opcode::NEG:
+            return "neg";
+
+        case Opcode::RET:
+            return "ret";
+
+        case Opcode::STORE:
+            return "st";
+        default:
+            return "";
+    }
+}
+
 void IR::ThreeAddrInstr::str(std::ostream& out) const
 {
 
@@ -54,52 +105,7 @@ void IR::ThreeAddrInstr::str(std::ostream& out) const
         out << this->regRes.get()->str() << " = ";
     }
 
-    switch (this->op)
-    {
-        case Opcode::BAD:
-            out << "bad";
-            break;
-        case Opcode::SUB:
-            out << "sub";
-            break;
-        case Opcode::ADD:
-            out << "add";
-            break;
-        case Opcode::MUL:
-            out << "mul";
-            break;
-        case Opcode::DIV:
-            out << "div";
-            break;
-        case Opcode::NEQ:
-            out << "neq";
-            break;
-        case Opcode::EQ:
-            out << "equ";
-            break;
-        case Opcode::GT:
-            out << "gt";
-            break;
-        case Opcode::GE:
-            out << "ge";
-            break;
-        case Opcode::LT:
-            out << "lt";
-            break;
-        case Opcode::LE:
-            out << "le";
-            break;
-        case Opcode::NEG:
-            out << "neg";
-            break;
-        case Opcode::RET:
-            out << "ret";
-            break;
-        case Opcode::STORE:
-            break;
-        default:
-            break;
-    }
+    out << this->opToStr();
 
     out << " ";
     if (this->arg1 != nullptr)

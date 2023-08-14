@@ -1,0 +1,28 @@
+{{ block.name }} [
+    fillcolor="#88ff0022"
+    label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="3">
+        <tr> <td port="block{{ block.name }}" sides="b"> <b> {{ block.name }} </b></td> </tr>
+        
+        {% for instr in block.instrs %}
+        {% include "instr.dot.tmpl" %}
+        {% endfor %}
+
+    </table>>
+    shape=plain
+]
+
+{% for next in block.next %}
+{{ block.name }} -> {{ next }}
+{% endfor %}
+
+
+{% for instr in block.instrs %}
+
+{% for argNext in instr.liveness %}
+
+{{ block.name }}:{{ argNext.from }} -> {{ argNext.block }}:{{ argNext.nextId }}
+
+{% endfor %}
+
+{% endfor %}
+

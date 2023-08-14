@@ -33,6 +33,8 @@ public:
         }
     }
 
+    std::map<IR::FuncName, std::unique_ptr<IR::Function>> funcs;
+
 private:
     typedef std::pair<IR::BasicBlockName, IR::BasicBlockName> ClauseBlocks;
     typedef std::unique_ptr<IR::InstrArg>                     ArgPtr;
@@ -102,8 +104,6 @@ private:
 
     Node       astRoot;
     ScopeNode* rootScope;
-
-    std::map<IR::FuncName, std::unique_ptr<IR::Function>> funcs;
 
     std::stack<WalkerCtx> ctxStack;
 

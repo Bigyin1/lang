@@ -17,6 +17,16 @@ typedef std::string FuncName;
 
 typedef std::string BasicBlockName;
 
+class ArgVisitor
+{
+public:
+    virtual void visitRegArg(const RegArg& rarg) = 0;
+
+    virtual void visitImmArg(const ImmArg& iarg) = 0;
+
+    virtual ~ArgVisitor() = default;
+};
+
 class InstrArg
 {
 
@@ -26,6 +36,8 @@ public:
     DataType GetType() { return this->type; }
 
     virtual std::string str() const = 0;
+
+    virtual void visit(ArgVisitor* v) = 0;
 
     virtual ~InstrArg() = default;
 
@@ -41,6 +53,8 @@ public:
     RegArg(IR::RegPtr reg) : InstrArg(reg->type), regArg(reg) {}
 
     std::string str() const override;
+
+    virtual void visit(ArgVisitor* v) override { v->visitRegArg(*this); }
 
     IR::RegPtr GetReg() const { return regArg; }
 
@@ -63,6 +77,8 @@ public:
 
     std::string str() const override;
 
+    virtual void visit(ArgVisitor* v) override { v->visitImmArg(*this); }
+
 private:
     union
     {
@@ -72,10 +88,26 @@ private:
     };
 };
 
+class InstrVisitor
+{
+public:
+    virtual void visitThreeAddr(const ThreeAddrInstr& tai) = 0;
+
+    virtual void visitBranchInstr(const BranchInstr& bi) = 0;
+
+    virtual void visitCallInstr(const CallInstr& ci) = 0;
+
+    virtual void visitRetInstr(const RetInstr& ri) = 0;
+
+    virtual ~InstrVisitor() = default;
+};
+
 class Instruction
 {
 public:
     virtual void str(std::ostream& out) const = 0;
+
+    virtual void visit(InstrVisitor* v) = 0;
 
     virtual ~Instruction() = default;
 };
@@ -105,7 +137,11 @@ public:
 
     };
 
+    std::string opToStr() const;
+
     virtual void str(std::ostream& out) const override;
+
+    virtual void visit(InstrVisitor* v) override { v->visitThreeAddr(*this); }
 
     ThreeAddrInstr(Opcode opc, std::unique_ptr<IR::InstrArg> a1, std::unique_ptr<IR::InstrArg> a2,
                    IR::RegPtr res)
@@ -125,7 +161,6 @@ public:
 
     ~ThreeAddrInstr() = default;
 
-private:
     Opcode op;
 
     IR::RegPtr regRes;
@@ -146,7 +181,8 @@ public:
 
     virtual void str(std::ostream& out) const override;
 
-private:
+    virtual void visit(InstrVisitor* v) override { v->visitBranchInstr(*this); }
+
     std::unique_ptr<InstrArg> cond;
 
     BasicBlockName ifTrue;
@@ -163,7 +199,8 @@ public:
 
     virtual void str(std::ostream& out) const override;
 
-private:
+    virtual void visit(InstrVisitor* v) override { v->visitCallInstr(*this); }
+
     FuncName name;
 
     std::vector<std::unique_ptr<InstrArg>> args;
@@ -178,7 +215,8 @@ public:
 
     virtual void str(std::ostream& out) const override;
 
-private:
+    virtual void visit(InstrVisitor* v) override { v->visitRetInstr(*this); }
+
     std::unique_ptr<InstrArg> retVal;
 };
 

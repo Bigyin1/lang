@@ -1,0 +1,8 @@
+subgraph {{ func.name }} {
+	node [style=filled];
+    {% for block in func.blocks %}
+
+    {% include "block.dot.tmpl" %}
+
+    {% endfor %}
+}

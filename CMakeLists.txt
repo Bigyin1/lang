@@ -5,7 +5,10 @@ include(cmake/CompileOptions.cmake)
 
 enable_testing()
 
+add_subdirectory(inja)
+
 add_subdirectory(lexer)
 add_subdirectory(parser)
 add_subdirectory(semantic)
 add_subdirectory(ir_comp)
+add_subdirectory(optimizer)
