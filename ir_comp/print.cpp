@@ -142,12 +142,12 @@ void IR::BranchInstr::str(std::ostream& out) const
 void IR::CallInstr::str(std::ostream& out) const
 {
 
-    if (this->res.get()->type != IR::DataType::Void)
+    if (this->res.get()->GetType() != IR::DataType::Void)
     {
         out << this->res.get()->str() << " = ";
     }
 
-    out << "call " << InstrArg::DataTypeToStr(res.get()->type) << " " << name << "(";
+    out << "call " << InstrArg::DataTypeToStr(res.get()->GetType()) << " " << name << "(";
     for (auto&& i : args)
     {
         out << i.get()->str() << ", ";

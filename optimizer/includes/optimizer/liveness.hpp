@@ -21,8 +21,6 @@ struct InstrLivenessData
 {
     typedef std::pair<LivenessState, const IR::Instruction*> ArgLivenessData;
 
-    ArgLivenessData res;
-
     std::vector<ArgLivenessData> args;
 };
 

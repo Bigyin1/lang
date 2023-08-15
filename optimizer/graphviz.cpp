@@ -1,4 +1,5 @@
 #include <inja.hpp>
+#include <iterator>
 
 #include "optimizer/dump.hpp"
 
@@ -15,62 +16,64 @@ public:
     {
     }
 
-    virtual void visitThreeAddr(const IR::ThreeAddrInstr& instr) override
+    virtual void visitThreeAddr(const IR::ThreeAddrInstr* instr) override
     {
 
-        this->buildInstrPartJson(addrToStr(&instr) + addrToStr(instr.regRes.get()),
-                                 instr.regRes.get()->str());
+        this->buildInstrPartJson(instr->regRes.get(), instr->regRes.get()->str());
 
-        this->buildInstrPartJson(addrToStr(&instr), instr.opToStr());
+        this->buildInstrPartJson(instr, instr->opToStr());
 
-        this->buildInstrPartJson(addrToStr(instr.arg1.get()), instr.arg1.get()->str());
+        this->buildInstrPartJson(instr->arg1.get(), instr->arg1.get()->str());
 
-        if (instr.arg2 != nullptr)
-            this->buildInstrPartJson(addrToStr(instr.arg2.get()), instr.arg2.get()->str());
+        if (instr->arg2 != nullptr)
+            this->buildInstrPartJson(instr->arg2.get(), instr->arg2.get()->str());
 
-        this->buildArgLivenessJson(this->instrLivData.res,
-                                   addrToStr(&instr) + addrToStr(instr.regRes.get()));
+        this->buildArgLivenessJson(this->instrLivData.args[0], instr->regRes.get());
 
-        this->buildArgLivenessJson(this->instrLivData.args[0], addrToStr(instr.arg1.get()));
+        this->buildArgLivenessJson(this->instrLivData.args[1], instr->arg1.get());
 
-        if (instr.arg2 != nullptr)
-            this->buildArgLivenessJson(this->instrLivData.args[1], addrToStr(instr.arg2.get()));
+        if (instr->arg2 != nullptr)
+            this->buildArgLivenessJson(this->instrLivData.args[2], instr->arg2.get());
     }
 
-    virtual void visitBranchInstr(const IR::BranchInstr& instr) override
+    virtual void visitBranchInstr(const IR::BranchInstr* instr) override
     {
 
-        this->buildInstrPartJson(addrToStr(&instr), "br");
+        this->buildInstrPartJson(instr, "br");
 
-        if (instr.cond != nullptr)
-            this->buildInstrPartJson(addrToStr(instr.cond.get()), instr.cond.get()->str());
+        if (instr->cond != nullptr)
+            this->buildInstrPartJson(instr->cond.get(), instr->cond.get()->str());
 
-        this->buildInstrPartJson(addrToStr(&instr), instr.ifTrue);
+        this->buildInstrPartJson(instr, instr->ifTrue);
 
-        if (instr.cond != nullptr)
-            this->buildInstrPartJson(addrToStr(&instr), instr.ifFalse);
+        if (instr->cond != nullptr)
+            this->buildInstrPartJson(&instr, instr->ifFalse);
 
-        if (instr.cond != nullptr)
-            this->buildArgLivenessJson(this->instrLivData.args[0], addrToStr(instr.cond.get()));
+        if (instr->cond != nullptr)
+            this->buildArgLivenessJson(this->instrLivData.args[0], instr->cond.get());
     }
 
-    virtual void visitCallInstr(const IR::CallInstr& instr) override
+    virtual void visitCallInstr(const IR::CallInstr* instr) override
     {
+        this->buildInstrPartJson(instr->res.get(), instr->res.get()->str());
+        this->buildArgLivenessJson(this->instrLivData.args[0], instr->res.get());
 
-        // this->buildInstrPartJson(instr.res.get(), instr.res.get()->str());
+        this->buildInstrPartJson(instr, "call");
 
-        // this->buildInstrPartJson(&instr, "call");
-
-        // this->buildInstrPartJson(&instr, "call");
+        for (size_t i = 0; i < instr->args.size(); i++)
+        {
+            this->buildInstrPartJson(instr->args[i].get(), instr->args[i].get()->str());
+            this->buildArgLivenessJson(this->instrLivData.args[i + 1], instr->args[i].get());
+        }
     }
 
-    virtual void visitRetInstr(const IR::RetInstr& instr) override
+    virtual void visitRetInstr(const IR::RetInstr* instr) override
     {
 
-        this->buildInstrPartJson(addrToStr(&instr), "ret");
+        this->buildInstrPartJson(instr, "ret");
 
-        if (instr.retVal != nullptr)
-            this->buildInstrPartJson(addrToStr(instr.retVal.get()), instr.retVal.get()->str());
+        if (instr->retVal != nullptr)
+            this->buildInstrPartJson(instr->retVal.get(), instr->retVal.get()->str());
     }
 
     inja::json instrPartsArr    = nlohmann::json::array();
@@ -81,17 +84,17 @@ private:
 
     std::map<IR::FuncName, std::unique_ptr<IR::Function>>& funcs;
 
-    void buildInstrPartJson(std::string id, std::string str)
+    void buildInstrPartJson(const void* partId, std::string str)
     {
 
         inja::json instrPart;
 
-        instrPart["id"]  = id;
+        instrPart["id"]  = this->addrToPartID(partId);
         instrPart["str"] = str;
         this->instrPartsArr.push_back(instrPart);
     }
 
-    void buildArgLivenessJson(InstrLivenessData::ArgLivenessData& argLiv, std::string fromId)
+    void buildArgLivenessJson(InstrLivenessData::ArgLivenessData& argLiv, const void* fromId)
     {
         if (argLiv.first == LivenessState::Dead || argLiv.first == LivenessState::NotVar)
             return;
@@ -100,13 +103,13 @@ private:
 
         inja::json instrArgLiveness;
 
-        instrArgLiveness["from"]   = fromId;
+        instrArgLiveness["from"]   = this->addrToPartID(fromId);
         instrArgLiveness["block"]  = this->getInstrBlock(next);
-        instrArgLiveness["nextId"] = this->addrToStr(next);
+        instrArgLiveness["nextId"] = this->addrToPartID(next);
         this->instrLivenessArr.push_back(instrArgLiveness);
     }
 
-    std::string addrToStr(const void* addr)
+    std::string addrToPartID(const void* addr)
     {
         std::stringstream ss;
 
@@ -203,10 +206,9 @@ void GraphVizGen::Write(std::ostream& out)
 
     inja::Environment env;
 
-    inja::Template temp   = env.parse_template(this->tmplPath);
-    std::string    result = env.render(temp, this->ctx);
+    inja::Template temp = env.parse_template(this->tmplPath);
 
-    out << result;
+    out << env.render(temp, this->ctx);
 }
 
 }; // namespace Opt

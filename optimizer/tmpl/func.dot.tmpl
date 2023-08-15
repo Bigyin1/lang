@@ -1,8 +1,8 @@
-subgraph {{ func.name }} {
-	node [style=filled];
-    {% for block in func.blocks %}
+subgraph cluster_{{ func.name }} {
+node [style=filled];
+{% for block in func.blocks %}
+{% include "block.dot.tmpl" %}
+{% endfor %}
 
-    {% include "block.dot.tmpl" %}
-
-    {% endfor %}
+label = {{ func.name }}
 }

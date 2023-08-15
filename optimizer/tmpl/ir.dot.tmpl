@@ -24,10 +24,8 @@ digraph ir_graph {
 		style=dashed	
 	]
 
-    {% for func in funcs %}
-
-    {% include "func.dot.tmpl" %}
-
-    {% endfor %}
+    {% for func in funcs %} 
+	{% include "func.dot.tmpl" %}
+	{% endfor %}
 
 }

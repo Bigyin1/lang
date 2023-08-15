@@ -20,9 +20,9 @@ typedef std::string BasicBlockName;
 class ArgVisitor
 {
 public:
-    virtual void visitRegArg(const RegArg& rarg) = 0;
+    virtual void visitRegArg(const RegArg* rarg) = 0;
 
-    virtual void visitImmArg(const ImmArg& iarg) = 0;
+    virtual void visitImmArg(const ImmArg* iarg) = 0;
 
     virtual ~ArgVisitor() = default;
 };
@@ -54,7 +54,7 @@ public:
 
     std::string str() const override;
 
-    virtual void visit(ArgVisitor* v) override { v->visitRegArg(*this); }
+    virtual void visit(ArgVisitor* v) override { v->visitRegArg(this); }
 
     IR::RegPtr GetReg() const { return regArg; }
 
@@ -77,7 +77,7 @@ public:
 
     std::string str() const override;
 
-    virtual void visit(ArgVisitor* v) override { v->visitImmArg(*this); }
+    virtual void visit(ArgVisitor* v) override { v->visitImmArg(this); }
 
 private:
     union
@@ -91,13 +91,13 @@ private:
 class InstrVisitor
 {
 public:
-    virtual void visitThreeAddr(const ThreeAddrInstr& tai) = 0;
+    virtual void visitThreeAddr(const ThreeAddrInstr* tai) = 0;
 
-    virtual void visitBranchInstr(const BranchInstr& bi) = 0;
+    virtual void visitBranchInstr(const BranchInstr* bi) = 0;
 
-    virtual void visitCallInstr(const CallInstr& ci) = 0;
+    virtual void visitCallInstr(const CallInstr* ci) = 0;
 
-    virtual void visitRetInstr(const RetInstr& ri) = 0;
+    virtual void visitRetInstr(const RetInstr* ri) = 0;
 
     virtual ~InstrVisitor() = default;
 };
@@ -141,21 +141,16 @@ public:
 
     virtual void str(std::ostream& out) const override;
 
-    virtual void visit(InstrVisitor* v) override { v->visitThreeAddr(*this); }
+    virtual void visit(InstrVisitor* v) override { v->visitThreeAddr(this); }
 
     ThreeAddrInstr(Opcode opc, std::unique_ptr<IR::InstrArg> a1, std::unique_ptr<IR::InstrArg> a2,
                    IR::RegPtr res)
-        : op(opc), regRes(res), arg1(a1.release()), arg2(a2.release())
+        : op(opc), regRes(std::make_unique<IR::RegArg>(res)), arg1(a1.release()), arg2(a2.release())
     {
     }
 
     ThreeAddrInstr(Opcode opc, std::unique_ptr<IR::InstrArg> arg, IR::RegPtr res)
-        : op(opc), regRes(res), arg1(arg.release()), arg2()
-    {
-    }
-
-    ThreeAddrInstr(Opcode opc, std::unique_ptr<IR::InstrArg> arg)
-        : op(opc), regRes(), arg1(arg.release()), arg2()
+        : op(opc), regRes(std::make_unique<IR::RegArg>(res)), arg1(arg.release()), arg2()
     {
     }
 
@@ -163,7 +158,7 @@ public:
 
     Opcode op;
 
-    IR::RegPtr regRes;
+    std::unique_ptr<RegArg> regRes;
 
     std::unique_ptr<InstrArg> arg1;
     std::unique_ptr<InstrArg> arg2;
@@ -181,7 +176,7 @@ public:
 
     virtual void str(std::ostream& out) const override;
 
-    virtual void visit(InstrVisitor* v) override { v->visitBranchInstr(*this); }
+    virtual void visit(InstrVisitor* v) override { v->visitBranchInstr(this); }
 
     std::unique_ptr<InstrArg> cond;
 
@@ -193,19 +188,19 @@ class CallInstr : public Instruction
 {
 public:
     CallInstr(FuncName n, std::vector<std::unique_ptr<InstrArg>> a, IR::RegPtr r)
-        : name(std::move(n)), args(std::move(a)), res(r)
+        : name(std::move(n)), args(std::move(a)), res(std::make_unique<IR::RegArg>(r))
     {
     }
 
     virtual void str(std::ostream& out) const override;
 
-    virtual void visit(InstrVisitor* v) override { v->visitCallInstr(*this); }
+    virtual void visit(InstrVisitor* v) override { v->visitCallInstr(this); }
 
     FuncName name;
 
     std::vector<std::unique_ptr<InstrArg>> args;
 
-    IR::RegPtr res;
+    std::unique_ptr<RegArg> res;
 };
 
 class RetInstr : public Instruction
@@ -215,7 +210,7 @@ public:
 
     virtual void str(std::ostream& out) const override;
 
-    virtual void visit(InstrVisitor* v) override { v->visitRetInstr(*this); }
+    virtual void visit(InstrVisitor* v) override { v->visitRetInstr(this); }
 
     std::unique_ptr<InstrArg> retVal;
 };

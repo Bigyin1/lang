@@ -37,20 +37,18 @@ private:
 public:
     ArgLivnessVisitor(Opt::NextRegUseTab& t) : tab(t) {}
 
-    void visitReg(const IR::Register* reg)
+    virtual void visitRegArg(const IR::RegArg* rarg) override
     {
         if (this->livenessData.first != LivenessState::NotVar)
         {
-            this->modifyLivenessTable(reg);
+            this->modifyLivenessTable(rarg->GetReg().get());
             return;
         }
 
-        this->livenessData = this->collectRegLivenessData(reg);
+        this->livenessData = this->collectRegLivenessData(rarg->GetReg().get());
     }
 
-    virtual void visitRegArg(const IR::RegArg& rarg) override { visitReg(rarg.GetReg().get()); }
-
-    virtual void visitImmArg(const IR::ImmArg&) override {}
+    virtual void visitImmArg(const IR::ImmArg*) override {}
 
     Opt::NextRegUseTab&   tab;
     const IR::BasicBlock* currBlock;
@@ -62,18 +60,6 @@ class InstrLivenessVisitor : public IR::InstrVisitor
 {
 
 private:
-    void getResLivness(const IR::Register* resReg)
-    {
-        if (resReg == nullptr)
-            return;
-
-        this->argVisitor.livenessData = {};
-
-        argVisitor.visitReg(resReg);
-
-        this->lw.res = this->argVisitor.livenessData;
-    }
-
     void getArgLivness(IR::InstrArg* arg)
     {
         if (arg == nullptr)
@@ -86,15 +72,15 @@ private:
         this->lw.args.push_back(this->argVisitor.livenessData);
     }
 
-    void setResToDead(const IR::Register* resReg)
+    void setResToDead(IR::RegArg* resReg)
     {
-        if (resReg == nullptr)
+        if (resReg->GetType() == IR::DataType::Void)
             return;
 
         this->argVisitor.livenessData.first  = LivenessState::Dead;
         this->argVisitor.livenessData.second = nullptr;
 
-        this->argVisitor.visitReg(resReg);
+        this->argVisitor.visitRegArg(resReg);
     }
 
     void setArgToLive(IR::InstrArg* arg, const IR::Instruction* instr)
@@ -111,40 +97,40 @@ private:
 public:
     InstrLivenessVisitor(Opt::NextRegUseTab& t) : argVisitor(t) {}
 
-    virtual void visitThreeAddr(const IR::ThreeAddrInstr& instr) override
+    virtual void visitThreeAddr(const IR::ThreeAddrInstr* instr) override
     {
-        this->getResLivness(instr.regRes.get());
-        this->getArgLivness(instr.arg1.get());
-        this->getArgLivness(instr.arg2.get());
+        this->getArgLivness(instr->regRes.get());
+        this->getArgLivness(instr->arg1.get());
+        this->getArgLivness(instr->arg2.get());
 
-        this->setResToDead(instr.regRes.get());
-        this->setArgToLive(instr.arg1.get(), &instr);
-        this->setArgToLive(instr.arg2.get(), &instr);
+        this->setResToDead(instr->regRes.get());
+        this->setArgToLive(instr->arg1.get(), instr);
+        this->setArgToLive(instr->arg2.get(), instr);
     }
 
-    virtual void visitBranchInstr(const IR::BranchInstr& instr) override
+    virtual void visitBranchInstr(const IR::BranchInstr* instr) override
     {
-        this->getArgLivness(instr.cond.get());
+        this->getArgLivness(instr->cond.get());
 
-        this->setArgToLive(instr.cond.get(), &instr);
+        this->setArgToLive(instr->cond.get(), instr);
     }
 
-    virtual void visitCallInstr(const IR::CallInstr& instr) override
+    virtual void visitCallInstr(const IR::CallInstr* instr) override
     {
-        this->getResLivness(instr.res.get());
-
-        for (auto&& arg : instr.args)
+        this->getArgLivness(instr->res.get());
+        for (auto&& arg : instr->args)
             this->getArgLivness(arg.get());
 
-        for (auto&& arg : instr.args)
-            this->setArgToLive(arg.get(), &instr);
+        this->setResToDead(instr->res.get());
+        for (auto&& arg : instr->args)
+            this->setArgToLive(arg.get(), instr);
     }
 
-    virtual void visitRetInstr(const IR::RetInstr& instr) override
+    virtual void visitRetInstr(const IR::RetInstr* instr) override
     {
-        this->getArgLivness(instr.retVal.get());
+        this->getArgLivness(instr->retVal.get());
 
-        this->setArgToLive(instr.retVal.get(), &instr);
+        this->setArgToLive(instr->retVal.get(), instr);
     }
 
     void SetCurrBlock(const IR::BasicBlock* currBlock) { this->argVisitor.currBlock = currBlock; }
