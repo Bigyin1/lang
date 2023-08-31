@@ -1,4 +1,5 @@
 add_library(optimizer
+    dag.cpp
     optimizer.cpp
     liveness.cpp
     graphviz.cpp

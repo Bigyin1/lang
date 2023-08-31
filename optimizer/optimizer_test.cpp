@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #include "ir_comp/compiler.hpp"
+#include "optimizer/dag.hpp"
 #include "optimizer/dump.hpp"
 #include "optimizer/liveness.hpp"
 #include "parser/parser.hpp"
@@ -93,12 +94,30 @@ int main(int argc, char** argv)
 
     la.Pass();
 
-    Opt::GraphVizGen gw(comp.funcs, la.livenessData);
+    Opt::GraphVizIRDump gw(comp.funcs, la.livenessData);
 
     gw.genCtx();
 
     std::ofstream jsonOut(argv[2]);
     gw.Write(jsonOut);
+
+    for (auto&& b : comp.funcs["main"].get()->blocks)
+    {
+        Opt::DAG::NodeList nodes;
+
+        Opt::DAG::Builder dagBuilder(nodes, b.get(), la.livenessData);
+        dagBuilder.BuildDAG();
+
+        Opt::DAG::Optimizer opt(nodes);
+        opt.Optimize();
+
+        Opt::DAG::GraphVizDAGDump gwDAG(nodes);
+
+        gwDAG.genCtx();
+
+        std::ofstream dagOut(b.get()->name + ".dot");
+        gwDAG.Write(dagOut);
+    }
 
     FreeSemCheck(&ch);
     FreeNode(p.prog);

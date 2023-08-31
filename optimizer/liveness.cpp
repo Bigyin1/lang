@@ -10,14 +10,17 @@ typedef std::map<const IR::Register*, const IR::Instruction*> NextRegUseTab;
 class ArgLivnessVisitor : public IR::ArgVisitor
 {
 private:
-    void modifyLivenessTable(const IR::Register* reg) { tab[reg] = livenessData.second; }
-
-    InstrLivenessData::ArgLivenessData collectRegLivenessData(const IR::Register* reg)
+    void modifyLivenessTable(const IR::Register* reg)
     {
-        const IR::Instruction* nextUse = tab[reg];
+        this->tab[reg] = livenessData.GetNextInstr();
+    }
+
+    ArgLivenessData collectRegLivenessData(const IR::Register* reg)
+    {
+        const IR::Instruction* nextUse = this->tab[reg];
 
         LivenessState st;
-        if (nextUse == NULL)
+        if (nextUse == nullptr)
         {
             st = LivenessState::Dead;
         }
@@ -31,7 +34,7 @@ private:
             }
         }
 
-        return InstrLivenessData::ArgLivenessData(st, nextUse);
+        return ArgLivenessData(st, nextUse);
     }
 
 public:
@@ -39,7 +42,7 @@ public:
 
     virtual void visitRegArg(const IR::RegArg* rarg) override
     {
-        if (this->livenessData.first != LivenessState::NotVar)
+        if (this->livenessData.GetState() != LivenessState::NotVar)
         {
             this->modifyLivenessTable(rarg->GetReg().get());
             return;
@@ -51,25 +54,28 @@ public:
     virtual void visitImmArg(const IR::ImmArg*) override {}
 
     Opt::NextRegUseTab&   tab;
-    const IR::BasicBlock* currBlock;
+    const IR::BasicBlock* currBlock = nullptr;
 
-    InstrLivenessData::ArgLivenessData livenessData;
+    ArgLivenessData livenessData = {};
 };
 
 class InstrLivenessVisitor : public IR::InstrVisitor
 {
 
 private:
-    void getArgLivness(IR::InstrArg* arg)
+    void getCurrArgLivness(IR::InstrArg* arg)
     {
+
         if (arg == nullptr)
+        {
+            this->lw.AddLivenessData(ArgLivenessData{});
             return;
+        }
 
         this->argVisitor.livenessData = {};
-
         arg->visit(&this->argVisitor);
 
-        this->lw.args.push_back(this->argVisitor.livenessData);
+        this->lw.AddLivenessData(this->argVisitor.livenessData);
     }
 
     void setResToDead(IR::RegArg* resReg)
@@ -77,8 +83,7 @@ private:
         if (resReg->GetType() == IR::DataType::Void)
             return;
 
-        this->argVisitor.livenessData.first  = LivenessState::Dead;
-        this->argVisitor.livenessData.second = nullptr;
+        this->argVisitor.livenessData.SetToDead();
 
         this->argVisitor.visitRegArg(resReg);
     }
@@ -88,8 +93,7 @@ private:
         if (arg == nullptr)
             return;
 
-        this->argVisitor.livenessData.first  = LivenessState::LiveInBlock;
-        this->argVisitor.livenessData.second = instr;
+        this->argVisitor.livenessData.SetToLiveInBlock(instr);
 
         arg->visit(&this->argVisitor);
     }
@@ -99,9 +103,9 @@ public:
 
     virtual void visitThreeAddr(const IR::ThreeAddrInstr* instr) override
     {
-        this->getArgLivness(instr->regRes.get());
-        this->getArgLivness(instr->arg1.get());
-        this->getArgLivness(instr->arg2.get());
+        this->getCurrArgLivness(instr->regRes.get());
+        this->getCurrArgLivness(instr->arg1.get());
+        this->getCurrArgLivness(instr->arg2.get());
 
         this->setResToDead(instr->regRes.get());
         this->setArgToLive(instr->arg1.get(), instr);
@@ -110,16 +114,16 @@ public:
 
     virtual void visitBranchInstr(const IR::BranchInstr* instr) override
     {
-        this->getArgLivness(instr->cond.get());
+        this->getCurrArgLivness(instr->cond.get());
 
         this->setArgToLive(instr->cond.get(), instr);
     }
 
     virtual void visitCallInstr(const IR::CallInstr* instr) override
     {
-        this->getArgLivness(instr->res.get());
+        this->getCurrArgLivness(instr->res.get());
         for (auto&& arg : instr->args)
-            this->getArgLivness(arg.get());
+            this->getCurrArgLivness(arg.get());
 
         this->setResToDead(instr->res.get());
         for (auto&& arg : instr->args)
@@ -128,7 +132,7 @@ public:
 
     virtual void visitRetInstr(const IR::RetInstr* instr) override
     {
-        this->getArgLivness(instr->retVal.get());
+        this->getCurrArgLivness(instr->retVal.get());
 
         this->setArgToLive(instr->retVal.get(), instr);
     }
@@ -144,7 +148,7 @@ public:
         return this->lw;
     }
 
-    Opt::InstrLivenessData lw;
+    Opt::InstrLivenessData lw = {};
 
     ArgLivnessVisitor argVisitor;
 };

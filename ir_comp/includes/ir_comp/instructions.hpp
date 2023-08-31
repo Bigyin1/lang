@@ -33,7 +33,7 @@ class InstrArg
 public:
     InstrArg(DataType t) : type(t) {}
 
-    DataType GetType() { return this->type; }
+    DataType GetType() const { return this->type; }
 
     virtual std::string str() const = 0;
 
@@ -42,6 +42,8 @@ public:
     virtual ~InstrArg() = default;
 
     static std::string DataTypeToStr(DataType dt);
+
+    bool HasType() { return this->type != DataType::Void; }
 
 protected:
     DataType type;
@@ -67,13 +69,14 @@ private:
 class ImmArg : public InstrArg
 {
 public:
+    ImmArg() : InstrArg(DataType::Void) {}
     ImmArg(double d) : InstrArg(DataType::F64), f64(d) {}
     ImmArg(int64_t i) : InstrArg(DataType::I64), i64(i) {}
     ImmArg(bool b) : InstrArg(DataType::I1), i1(b) {}
 
-    double  F64() { return this->f64; }
-    int64_t I64() { return this->i64; }
-    bool    I1() { return this->i1; }
+    double  F64() const { return this->f64; }
+    int64_t I64() const { return this->i64; }
+    bool    I1() const { return this->i1; }
 
     std::string str() const override;
 
@@ -132,12 +135,11 @@ public:
 
         NEG,
 
-        RET,
         STORE,
 
     };
 
-    std::string opToStr() const;
+    static std::string opToStr(Opcode op);
 
     virtual void str(std::ostream& out) const override;
 

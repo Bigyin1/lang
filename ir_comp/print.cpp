@@ -34,10 +34,8 @@ std::string IR::ImmArg::str() const
             return this->DataTypeToStr(type) + " " + std::to_string(this->i1);
         case DataType::I64:
             return this->DataTypeToStr(type) + " " + std::to_string(this->i64);
-
         case DataType::F64:
             return this->DataTypeToStr(type) + " " + std::to_string(this->f64);
-
         case DataType::Void:
         default:
             break;
@@ -46,10 +44,10 @@ std::string IR::ImmArg::str() const
     return "";
 }
 
-std::string IR::ThreeAddrInstr::opToStr() const
+std::string IR::ThreeAddrInstr::opToStr(Opcode op)
 {
 
-    switch (this->op)
+    switch (op)
     {
         case Opcode::BAD:
             return "bad";
@@ -87,9 +85,6 @@ std::string IR::ThreeAddrInstr::opToStr() const
         case Opcode::NEG:
             return "neg";
 
-        case Opcode::RET:
-            return "ret";
-
         case Opcode::STORE:
             return "st";
         default:
@@ -105,7 +100,7 @@ void IR::ThreeAddrInstr::str(std::ostream& out) const
         out << this->regRes.get()->str() << " = ";
     }
 
-    out << this->opToStr();
+    out << this->opToStr(this->op);
 
     out << " ";
     if (this->arg1 != nullptr)

@@ -33,7 +33,7 @@ public:
         }
     }
 
-    std::map<IR::FuncName, std::unique_ptr<IR::Function>> funcs;
+    std::map<IR::FuncName, std::unique_ptr<IR::Function>> funcs = {};
 
 private:
     typedef std::pair<IR::BasicBlockName, IR::BasicBlockName> ClauseBlocks;
@@ -110,10 +110,10 @@ private:
     std::stack<ClauseBlocks> currForStmtBlocks;
 
     unsigned GetNextID() { return nextId++; }
-    unsigned nextId;
+    unsigned nextId = 0;
 
-    IR::Function*   currFunc;
-    IR::BasicBlock* currBBlock;
+    IR::Function*   currFunc   = nullptr;
+    IR::BasicBlock* currBBlock = nullptr;
 
     std::map<const Symbol*, IR::RegPtr> var2reg;
 };

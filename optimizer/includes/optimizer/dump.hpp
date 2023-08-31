@@ -5,16 +5,17 @@
 #include <iostream>
 #include <map>
 
+#include "optimizer/dag.hpp"
 #include "optimizer/liveness.hpp"
 
 namespace Opt
 {
 
-class GraphVizGen
+class GraphVizIRDump
 {
 
 public:
-    GraphVizGen(std::map<IR::FuncName, std::unique_ptr<IR::Function>>& f, LivenessData& ld)
+    GraphVizIRDump(std::map<IR::FuncName, std::unique_ptr<IR::Function>>& f, LivenessData& ld)
         : funcs(f), livenessData(ld)
     {
     }
@@ -33,7 +34,30 @@ private:
 
     inja::json ctx;
 
-    std::string tmplPath = "/home/ser/myProjects/lang/optimizer/tmpl/ir.dot.tmpl";
+    std::string tmplPath = "/home/ser/myProjects/lang/optimizer/tmpl/ir/ir.dot.tmpl";
 };
+
+namespace DAG
+{
+
+class GraphVizDAGDump
+{
+
+public:
+    GraphVizDAGDump(NodeList& n) : nodes(n) {}
+
+    void Write(std::ostream& out);
+
+    void genCtx();
+
+private:
+    inja::json ctx = {};
+
+    NodeList& nodes;
+
+    std::string tmplPath = "/home/ser/myProjects/lang/optimizer/tmpl/dag/dag.dot.tmpl";
+};
+
+} // namespace DAG
 
 } // namespace Opt

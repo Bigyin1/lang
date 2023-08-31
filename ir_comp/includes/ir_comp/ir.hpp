@@ -15,11 +15,11 @@ namespace IR
 
 struct BasicBlock
 {
-    BasicBlock(BasicBlockName name) : name(name), instrs() {}
+    BasicBlock(BasicBlockName n) : name(n) {}
 
     BasicBlockName name;
 
-    std::vector<std::unique_ptr<Instruction>> instrs;
+    std::vector<std::unique_ptr<Instruction>> instrs = {};
 
     void print(std::ostream& out) const
     {

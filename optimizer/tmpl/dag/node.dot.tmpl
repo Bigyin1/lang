@@ -1,0 +1,15 @@
+{{ node.id }} [
+label = "<{{ node.id }}> {{ node.label }} {% for br in node.boundRegs %}|<{{ br.id }}> {{ br.name }}({{ br.live}}){% endfor %}"
+shape = "record"
+];
+
+{% for to in node.to %}
+{{ node.id }}:{{ node.id }} -> {{ to }}:{{ to }} [arrowsize=0.5 labeldistance=3 penwidth=0.5]
+{% endfor %}
+
+
+{% for br in node.boundRegs %}
+{% for realArg in br.to %}
+{{ node.id }}:{{ br.id }} -> {{ realArg.node }}:{{ realArg.idx }} [arrowsize=0.5 labeldistance=3 penwidth=0.5 style=dashed]
+{% endfor %}
+{% endfor %}
