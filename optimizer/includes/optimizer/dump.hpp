@@ -15,8 +15,9 @@ class GraphVizIRDump
 {
 
 public:
-    GraphVizIRDump(std::map<IR::FuncName, std::unique_ptr<IR::Function>>& f, LivenessData& ld)
-        : funcs(f), livenessData(ld)
+    GraphVizIRDump(std::map<IR::FuncName, std::unique_ptr<IR::Function>>& f, LivenessData& ld,
+                   std::string _tmplPath)
+        : funcs(f), livenessData(ld), tmplPath(_tmplPath)
     {
     }
 
@@ -34,7 +35,7 @@ private:
 
     inja::json ctx;
 
-    std::string tmplPath = "/home/ser/myProjects/lang/optimizer/tmpl/ir/ir.dot.tmpl";
+    std::string tmplPath;
 };
 
 namespace DAG
@@ -44,7 +45,7 @@ class GraphVizDAGDump
 {
 
 public:
-    GraphVizDAGDump(NodeList& n) : nodes(n) {}
+    GraphVizDAGDump(NodeList& n, std::string _tmplPath) : nodes(n), tmplPath(_tmplPath) {}
 
     void Write(std::ostream& out);
 
@@ -55,7 +56,7 @@ private:
 
     NodeList& nodes;
 
-    std::string tmplPath = "/home/ser/myProjects/lang/optimizer/tmpl/dag/dag.dot.tmpl";
+    std::string tmplPath;
 };
 
 } // namespace DAG

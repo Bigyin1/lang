@@ -94,7 +94,8 @@ int main(int argc, char** argv)
 
     la.Pass();
 
-    Opt::GraphVizIRDump gw(comp.funcs, la.livenessData);
+    Opt::GraphVizIRDump gw(comp.funcs, la.livenessData,
+                           "../tmpl/ir/ir.dot.tmpl"); // TODO: better config
 
     gw.genCtx();
 
@@ -111,7 +112,7 @@ int main(int argc, char** argv)
         Opt::DAG::Optimizer opt(nodes);
         opt.Optimize();
 
-        Opt::DAG::GraphVizDAGDump gwDAG(nodes);
+        Opt::DAG::GraphVizDAGDump gwDAG(nodes, "../tmpl/dag/dag.dot.tmpl");
 
         gwDAG.genCtx();
 

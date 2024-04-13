@@ -1,0 +1,1098 @@
+digraph ir_graph {
+	graph [
+		
+		labelloc = t
+		fontname = "Helvetica,Arial,sans-serif"
+		fontsize = 20
+		layout = dot
+		rankdir = TD
+		newrank = true
+	]
+	node [
+		style=filled
+		shape=rect
+		pencolor="#00000044"
+		fontname="Helvetica,Arial,sans-serif"
+		shape=plaintext
+	]
+	edge [
+		arrowsize=0.5
+		fontname="Helvetica,Arial,sans-serif"
+		labeldistance=3
+		labelfontcolor="#00000080"
+		penwidth=0.5
+		style=dashed	
+	]
+
+     
+	subgraph cluster_fn {
+node [style=filled];
+
+1 [
+    fillcolor="#88ff0022"
+    label=<<table border="9" cellborder="1" cellspacing="0" cellpadding="3">
+        <tr> <td port="block1" sides="b"> <b> 1 </b></td> </tr>
+        
+        <tr> 
+    
+    <td port="x0x6030000027a0"> i1 %2 </td>
+    
+    <td port="x0x604000000c50"> st </td>
+    
+    <td port="x0x603000002770"> i1 %0 </td>
+    
+</tr>
+
+        
+        <tr> 
+    
+    <td port="x0x603000002830"> f64 %3 </td>
+    
+    <td port="x0x604000000c90"> div </td>
+    
+    <td port="x0x6030000027d0"> f64 3.140000 </td>
+    
+    <td port="x0x603000002800"> f64 2.000000 </td>
+    
+</tr>
+
+        
+        <tr> 
+    
+    <td port="x0x602000001130"> ret </td>
+    
+    <td port="x0x603000002860"> f64 %3 </td>
+    
+</tr>
+
+        
+    </table>>
+    shape=plain
+]
+
+
+
+
+
+
+
+1:x0x603000002830 -> 1:x0x602000001130
+
+
+
+
+
+
+4 [
+    fillcolor="#88ff0022"
+    label=<<table border="9" cellborder="1" cellspacing="0" cellpadding="3">
+        <tr> <td port="block4" sides="b"> <b> 4 </b></td> </tr>
+        
+    </table>>
+    shape=plain
+]
+
+
+
+
+
+
+
+label = fn
+}
+
+	 
+	subgraph cluster_fn2 {
+node [style=filled];
+
+1 [
+    fillcolor="#88ff0022"
+    label=<<table border="9" cellborder="1" cellspacing="0" cellpadding="3">
+        <tr> <td port="block1" sides="b"> <b> 1 </b></td> </tr>
+        
+        <tr> 
+    
+    <td port="x0x6030000028f0"> i64 %2 </td>
+    
+    <td port="x0x604000000cd0"> st </td>
+    
+    <td port="x0x6030000028c0"> i64 %0 </td>
+    
+</tr>
+
+        
+        <tr> 
+    
+    <td port="x0x6020000011d0"> ret </td>
+    
+    <td port="x0x603000002920"> i64 %2 </td>
+    
+</tr>
+
+        
+    </table>>
+    shape=plain
+]
+
+
+
+
+
+1:x0x6030000028f0 -> 1:x0x6020000011d0
+
+
+
+
+
+
+3 [
+    fillcolor="#88ff0022"
+    label=<<table border="9" cellborder="1" cellspacing="0" cellpadding="3">
+        <tr> <td port="block3" sides="b"> <b> 3 </b></td> </tr>
+        
+    </table>>
+    shape=plain
+]
+
+
+
+
+
+
+
+label = fn2
+}
+
+	 
+	subgraph cluster_fn3 {
+node [style=filled];
+
+1 [
+    fillcolor="#88ff0022"
+    label=<<table border="9" cellborder="1" cellspacing="0" cellpadding="3">
+        <tr> <td port="block1" sides="b"> <b> 1 </b></td> </tr>
+        
+        <tr> 
+    
+    <td port="x0x603000002980"> f64 %2 </td>
+    
+    <td port="x0x604000000d10"> st </td>
+    
+    <td port="x0x603000002950"> f64 %0 </td>
+    
+</tr>
+
+        
+        <tr> 
+    
+    <td port="x0x602000001290"> ret </td>
+    
+</tr>
+
+        
+    </table>>
+    shape=plain
+]
+
+
+
+
+
+
+
+
+
+
+3 [
+    fillcolor="#88ff0022"
+    label=<<table border="9" cellborder="1" cellspacing="0" cellpadding="3">
+        <tr> <td port="block3" sides="b"> <b> 3 </b></td> </tr>
+        
+    </table>>
+    shape=plain
+]
+
+
+
+
+
+
+
+label = fn3
+}
+
+	 
+	subgraph cluster_main {
+node [style=filled];
+
+5 [
+    fillcolor="#88ff0022"
+    label=<<table border="9" cellborder="1" cellspacing="0" cellpadding="3">
+        <tr> <td port="block5" sides="b"> <b> 5 </b></td> </tr>
+        
+        <tr> 
+    
+    <td port="x0x603000002a10"> i1 %6 </td>
+    
+    <td port="x0x604000000d50"> st </td>
+    
+    <td port="x0x6030000029e0"> i1 0 </td>
+    
+</tr>
+
+        
+        <tr> 
+    
+    <td port="x0x603000002a70"> i1 %7 </td>
+    
+    <td port="x0x604000000d90"> st </td>
+    
+    <td port="x0x603000002a40"> i1 0 </td>
+    
+</tr>
+
+        
+        <tr> 
+    
+    <td port="x0x607000000250"> br </td>
+    
+    <td port="x0x603000002aa0"> i1 1 </td>
+    
+    <td port="x0x607000000250"> 11 </td>
+    
+    <td port="x0x7ff7bfefdcb0"> 10 </td>
+    
+</tr>
+
+        
+    </table>>
+    shape=plain
+]
+
+
+5 -> 11
+
+5 -> 10
+
+
+
+
+
+
+
+
+
+
+
+11 [
+    fillcolor="#88ff0022"
+    label=<<table border="9" cellborder="1" cellspacing="0" cellpadding="3">
+        <tr> <td port="block11" sides="b"> <b> 11 </b></td> </tr>
+        
+        <tr> 
+    
+    <td port="x0x6070000002c0"> br </td>
+    
+    <td port="x0x603000002b00"> i1 0 </td>
+    
+    <td port="x0x6070000002c0"> 8 </td>
+    
+    <td port="x0x7ff7bfefdcb0"> 10 </td>
+    
+</tr>
+
+        
+    </table>>
+    shape=plain
+]
+
+
+11 -> 8
+
+11 -> 10
+
+
+
+
+
+
+
+10 [
+    fillcolor="#88ff0022"
+    label=<<table border="9" cellborder="1" cellspacing="0" cellpadding="3">
+        <tr> <td port="block10" sides="b"> <b> 10 </b></td> </tr>
+        
+        <tr> 
+    
+    <td port="x0x607000000330"> br </td>
+    
+    <td port="x0x603000002b60"> i1 %4 </td>
+    
+    <td port="x0x607000000330"> 8 </td>
+    
+    <td port="x0x7ff7bfefdcb0"> 9 </td>
+    
+</tr>
+
+        
+    </table>>
+    shape=plain
+]
+
+
+10 -> 8
+
+10 -> 9
+
+
+
+
+
+
+
+8 [
+    fillcolor="#88ff0022"
+    label=<<table border="9" cellborder="1" cellspacing="0" cellpadding="3">
+        <tr> <td port="block8" sides="b"> <b> 8 </b></td> </tr>
+        
+        <tr> 
+    
+    <td port="x0x603000002bc0"> i1 %7 </td>
+    
+    <td port="x0x604000000dd0"> st </td>
+    
+    <td port="x0x603000002b90"> i1 1 </td>
+    
+</tr>
+
+        
+        <tr> 
+    
+    <td port="x0x6070000003a0"> br </td>
+    
+    <td port="x0x6070000003a0"> 9 </td>
+    
+</tr>
+
+        
+    </table>>
+    shape=plain
+]
+
+
+8 -> 9
+
+
+
+
+8:x0x603000002bc0 -> 9:x0x607000000410
+
+
+
+
+
+
+9 [
+    fillcolor="#88ff0022"
+    label=<<table border="9" cellborder="1" cellspacing="0" cellpadding="3">
+        <tr> <td port="block9" sides="b"> <b> 9 </b></td> </tr>
+        
+        <tr> 
+    
+    <td port="x0x603000002c20"> f64 %12 </td>
+    
+    <td port="x0x607000000410"> call </td>
+    
+    <td port="x0x603000002bf0"> i1 %7 </td>
+    
+</tr>
+
+        
+        <tr> 
+    
+    <td port="x0x603000002cb0"> i64 %13 </td>
+    
+    <td port="x0x604000000e10"> st </td>
+    
+    <td port="x0x603000002c80"> i64 1 </td>
+    
+</tr>
+
+        
+        <tr> 
+    
+    <td port="x0x603000002d10"> i64 %14 </td>
+    
+    <td port="x0x607000000480"> call </td>
+    
+    <td port="x0x603000002ce0"> i64 1 </td>
+    
+</tr>
+
+        
+        <tr> 
+    
+    <td port="x0x603000002dd0"> i1 %15 </td>
+    
+    <td port="x0x604000000e50"> st </td>
+    
+    <td port="x0x603000002da0"> i1 1 </td>
+    
+</tr>
+
+        
+        <tr> 
+    
+    <td port="x0x603000002e30"> f64 %16 </td>
+    
+    <td port="x0x604000000e90"> st </td>
+    
+    <td port="x0x603000002e00"> f64 0.000000 </td>
+    
+</tr>
+
+        
+        <tr> 
+    
+    <td port="x0x6070000004f0"> br </td>
+    
+    <td port="x0x6070000004f0"> 17 </td>
+    
+</tr>
+
+        
+    </table>>
+    shape=plain
+]
+
+
+9 -> 17
+
+
+
+
+
+
+9:x0x603000002cb0 -> 18:x0x604000000ed0
+
+
+
+9:x0x603000002d10 -> 18:x0x604000000f10
+
+
+
+9:x0x603000002dd0 -> 27:x0x607000000950
+
+
+
+
+
+
+
+
+17 [
+    fillcolor="#88ff0022"
+    label=<<table border="9" cellborder="1" cellspacing="0" cellpadding="3">
+        <tr> <td port="block17" sides="b"> <b> 17 </b></td> </tr>
+        
+        <tr> 
+    
+    <td port="x0x607000000560"> br </td>
+    
+    <td port="x0x603000002e60"> i1 0 </td>
+    
+    <td port="x0x607000000560"> 18 </td>
+    
+    <td port="x0x7ff7bfefdcb0"> 19 </td>
+    
+</tr>
+
+        
+    </table>>
+    shape=plain
+]
+
+
+17 -> 18
+
+17 -> 19
+
+
+
+
+
+
+
+18 [
+    fillcolor="#88ff0022"
+    label=<<table border="9" cellborder="1" cellspacing="0" cellpadding="3">
+        <tr> <td port="block18" sides="b"> <b> 18 </b></td> </tr>
+        
+        <tr> 
+    
+    <td port="x0x603000002ef0"> i64 %13 </td>
+    
+    <td port="x0x604000000ed0"> add </td>
+    
+    <td port="x0x603000002e90"> i64 %13 </td>
+    
+    <td port="x0x603000002ec0"> i64 1 </td>
+    
+</tr>
+
+        
+        <tr> 
+    
+    <td port="x0x603000002fb0"> i64 %14 </td>
+    
+    <td port="x0x604000000f10"> sub </td>
+    
+    <td port="x0x603000002f50"> i64 %14 </td>
+    
+    <td port="x0x603000002f80"> i64 1 </td>
+    
+</tr>
+
+        
+        <tr> 
+    
+    <td port="x0x6070000005d0"> br </td>
+    
+    <td port="x0x6070000005d0"> 17 </td>
+    
+</tr>
+
+        
+    </table>>
+    shape=plain
+]
+
+
+18 -> 17
+
+
+
+
+18:x0x603000002ef0 -> 20:x0x604000000f90
+
+18:x0x603000002e90 -> 20:x0x604000000f90
+
+
+
+18:x0x603000002fb0 -> 20:x0x604000000f50
+
+18:x0x603000002f50 -> 20:x0x604000000f50
+
+
+
+
+
+
+20 [
+    fillcolor="#88ff0022"
+    label=<<table border="9" cellborder="1" cellspacing="0" cellpadding="3">
+        <tr> <td port="block20" sides="b"> <b> 20 </b></td> </tr>
+        
+        <tr> 
+    
+    <td port="x0x6030000030a0"> i64 %14 </td>
+    
+    <td port="x0x604000000f50"> add </td>
+    
+    <td port="x0x603000003040"> i64 %14 </td>
+    
+    <td port="x0x603000003070"> i64 2 </td>
+    
+</tr>
+
+        
+        <tr> 
+    
+    <td port="x0x603000003160"> i1 %23 </td>
+    
+    <td port="x0x604000000f90"> ge </td>
+    
+    <td port="x0x603000003100"> i64 %13 </td>
+    
+    <td port="x0x603000003130"> i64 1 </td>
+    
+</tr>
+
+        
+        <tr> 
+    
+    <td port="x0x607000000640"> br </td>
+    
+    <td port="x0x603000003190"> i1 %23 </td>
+    
+    <td port="x0x607000000640"> 21 </td>
+    
+    <td port="x0x7ff7bfefdcb0"> 22 </td>
+    
+</tr>
+
+        
+    </table>>
+    shape=plain
+]
+
+
+20 -> 21
+
+20 -> 22
+
+
+
+
+20:x0x6030000030a0 -> 19:x0x604000001010
+
+20:x0x603000003040 -> 19:x0x604000001010
+
+
+
+20:x0x603000003160 -> 20:x0x607000000640
+
+
+
+
+
+
+21 [
+    fillcolor="#88ff0022"
+    label=<<table border="9" cellborder="1" cellspacing="0" cellpadding="3">
+        <tr> <td port="block21" sides="b"> <b> 21 </b></td> </tr>
+        
+        <tr> 
+    
+    <td port="x0x603000003220"> i64 %13 </td>
+    
+    <td port="x0x604000000fd0"> st </td>
+    
+    <td port="x0x6030000031f0"> i64 1 </td>
+    
+</tr>
+
+        
+        <tr> 
+    
+    <td port="x0x6070000006b0"> br </td>
+    
+    <td port="x0x6070000006b0"> 19 </td>
+    
+</tr>
+
+        
+    </table>>
+    shape=plain
+]
+
+
+21 -> 19
+
+
+
+
+
+
+
+
+
+24 [
+    fillcolor="#88ff0022"
+    label=<<table border="9" cellborder="1" cellspacing="0" cellpadding="3">
+        <tr> <td port="block24" sides="b"> <b> 24 </b></td> </tr>
+        
+        <tr> 
+    
+    <td port="x0x607000000720"> br </td>
+    
+    <td port="x0x607000000720"> 22 </td>
+    
+</tr>
+
+        
+    </table>>
+    shape=plain
+]
+
+
+24 -> 22
+
+
+
+
+
+
+
+22 [
+    fillcolor="#88ff0022"
+    label=<<table border="9" cellborder="1" cellspacing="0" cellpadding="3">
+        <tr> <td port="block22" sides="b"> <b> 22 </b></td> </tr>
+        
+        <tr> 
+    
+    <td port="x0x607000000790"> br </td>
+    
+    <td port="x0x607000000790"> 17 </td>
+    
+</tr>
+
+        
+    </table>>
+    shape=plain
+]
+
+
+22 -> 17
+
+
+
+
+
+
+
+19 [
+    fillcolor="#88ff0022"
+    label=<<table border="9" cellborder="1" cellspacing="0" cellpadding="3">
+        <tr> <td port="block19" sides="b"> <b> 19 </b></td> </tr>
+        
+        <tr> 
+    
+    <td port="x0x6030000032b0"> i1 %30 </td>
+    
+    <td port="x0x604000001010"> ge </td>
+    
+    <td port="x0x603000003250"> i64 %14 </td>
+    
+    <td port="x0x603000003280"> i64 0 </td>
+    
+</tr>
+
+        
+        <tr> 
+    
+    <td port="x0x607000000800"> br </td>
+    
+    <td port="x0x6030000032e0"> i1 %30 </td>
+    
+    <td port="x0x607000000800"> 29 </td>
+    
+    <td port="x0x7ff7bfefdcb0"> 27 </td>
+    
+</tr>
+
+        
+    </table>>
+    shape=plain
+]
+
+
+19 -> 29
+
+19 -> 27
+
+
+
+
+19:x0x6030000032b0 -> 19:x0x607000000800
+
+19:x0x603000003250 -> 28:x0x604000001090
+
+
+
+
+
+
+29 [
+    fillcolor="#88ff0022"
+    label=<<table border="9" cellborder="1" cellspacing="0" cellpadding="3">
+        <tr> <td port="block29" sides="b"> <b> 29 </b></td> </tr>
+        
+        <tr> 
+    
+    <td port="x0x603000003370"> i1 %31 </td>
+    
+    <td port="x0x604000001050"> le </td>
+    
+    <td port="x0x603000003310"> i64 %1 </td>
+    
+    <td port="x0x603000003340"> i64 0 </td>
+    
+</tr>
+
+        
+        <tr> 
+    
+    <td port="x0x607000000870"> br </td>
+    
+    <td port="x0x6030000033a0"> i1 %31 </td>
+    
+    <td port="x0x607000000870"> 28 </td>
+    
+    <td port="x0x7ff7bfefdcb0"> 27 </td>
+    
+</tr>
+
+        
+    </table>>
+    shape=plain
+]
+
+
+29 -> 28
+
+29 -> 27
+
+
+
+
+29:x0x603000003370 -> 29:x0x607000000870
+
+
+
+
+
+
+28 [
+    fillcolor="#88ff0022"
+    label=<<table border="9" cellborder="1" cellspacing="0" cellpadding="3">
+        <tr> <td port="block28" sides="b"> <b> 28 </b></td> </tr>
+        
+        <tr> 
+    
+    <td port="x0x603000003430"> i1 %32 </td>
+    
+    <td port="x0x604000001090"> le </td>
+    
+    <td port="x0x6030000033d0"> i64 %14 </td>
+    
+    <td port="x0x603000003400"> i64 2 </td>
+    
+</tr>
+
+        
+        <tr> 
+    
+    <td port="x0x6070000008e0"> br </td>
+    
+    <td port="x0x603000003460"> i1 %32 </td>
+    
+    <td port="x0x6070000008e0"> 25 </td>
+    
+    <td port="x0x7ff7bfefdcb0"> 27 </td>
+    
+</tr>
+
+        
+    </table>>
+    shape=plain
+]
+
+
+28 -> 25
+
+28 -> 27
+
+
+
+
+28:x0x603000003430 -> 28:x0x6070000008e0
+
+28:x0x6030000033d0 -> 25:x0x6040000010d0
+
+
+
+
+
+
+27 [
+    fillcolor="#88ff0022"
+    label=<<table border="9" cellborder="1" cellspacing="0" cellpadding="3">
+        <tr> <td port="block27" sides="b"> <b> 27 </b></td> </tr>
+        
+        <tr> 
+    
+    <td port="x0x607000000950"> br </td>
+    
+    <td port="x0x603000003490"> i1 %15 </td>
+    
+    <td port="x0x607000000950"> 25 </td>
+    
+    <td port="x0x7ff7bfefdcb0"> 26 </td>
+    
+</tr>
+
+        
+    </table>>
+    shape=plain
+]
+
+
+27 -> 25
+
+27 -> 26
+
+
+
+
+
+
+
+25 [
+    fillcolor="#88ff0022"
+    label=<<table border="9" cellborder="1" cellspacing="0" cellpadding="3">
+        <tr> <td port="block25" sides="b"> <b> 25 </b></td> </tr>
+        
+        <tr> 
+    
+    <td port="x0x603000003520"> i64 %14 </td>
+    
+    <td port="x0x6040000010d0"> add </td>
+    
+    <td port="x0x6030000034c0"> i64 %14 </td>
+    
+    <td port="x0x6030000034f0"> i64 1 </td>
+    
+</tr>
+
+        
+        <tr> 
+    
+    <td port="x0x6070000009c0"> br </td>
+    
+    <td port="x0x6070000009c0"> 26 </td>
+    
+</tr>
+
+        
+    </table>>
+    shape=plain
+]
+
+
+25 -> 26
+
+
+
+
+25:x0x603000003520 -> 26:x0x604000001110
+
+25:x0x6030000034c0 -> 26:x0x604000001110
+
+
+
+
+
+
+26 [
+    fillcolor="#88ff0022"
+    label=<<table border="9" cellborder="1" cellspacing="0" cellpadding="3">
+        <tr> <td port="block26" sides="b"> <b> 26 </b></td> </tr>
+        
+        <tr> 
+    
+    <td port="x0x6030000035e0"> i64 %14 </td>
+    
+    <td port="x0x604000001110"> sub </td>
+    
+    <td port="x0x603000003580"> i64 %14 </td>
+    
+    <td port="x0x6030000035b0"> i64 1 </td>
+    
+</tr>
+
+        
+        <tr> 
+    
+    <td port="x0x6030000036d0"> i64 %33 </td>
+    
+    <td port="x0x604000001150"> div </td>
+    
+    <td port="x0x603000003670"> i64 8 </td>
+    
+    <td port="x0x6030000036a0"> i64 9 </td>
+    
+</tr>
+
+        
+        <tr> 
+    
+    <td port="x0x603000003760"> i64 %34 </td>
+    
+    <td port="x0x604000001190"> mul </td>
+    
+    <td port="x0x603000003700"> i64 %33 </td>
+    
+    <td port="x0x603000003730"> i64 3 </td>
+    
+</tr>
+
+        
+        <tr> 
+    
+    <td port="x0x6030000037f0"> i64 %35 </td>
+    
+    <td port="x0x6040000011d0"> sub </td>
+    
+    <td port="x0x603000003640"> i64 7 </td>
+    
+    <td port="x0x6030000037c0"> i64 %34 </td>
+    
+</tr>
+
+        
+        <tr> 
+    
+    <td port="x0x602000001710"> ret </td>
+    
+    <td port="x0x603000003820"> i64 %35 </td>
+    
+</tr>
+
+        
+    </table>>
+    shape=plain
+]
+
+
+
+
+
+
+
+26:x0x6030000036d0 -> 26:x0x604000001190
+
+
+
+26:x0x603000003760 -> 26:x0x6040000011d0
+
+
+
+26:x0x6030000037f0 -> 26:x0x602000001710
+
+
+
+
+
+
+36 [
+    fillcolor="#88ff0022"
+    label=<<table border="9" cellborder="1" cellspacing="0" cellpadding="3">
+        <tr> <td port="block36" sides="b"> <b> 36 </b></td> </tr>
+        
+    </table>>
+    shape=plain
+]
+
+
+
+
+
+
+
+label = main
+}
+
+	
+
+}
